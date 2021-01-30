@@ -37,8 +37,6 @@ router.delete("/", function (req, res) {
 
 router.put("/update-project-title", function(req, res) {
     const {project_id, title} = req.body
-
-
     connection.query(
       "UPDATE project SET title = ? WHERE id = ?",
       [title, project_id], function(err, results, fields) {
