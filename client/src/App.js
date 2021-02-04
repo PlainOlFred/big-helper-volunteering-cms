@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   BrowserRouter as Router,
   Switch,
@@ -7,22 +7,29 @@ import {
 } from "react-router-dom";
 import './App.css';
 
+import NavBar from './components/NavBar'
+import SideNav from './components/SideNav';
+
 function App() {
+
+  const [state, setState] = useState({
+    isSideNavOpen: false,
+  });
+
+  const toggleSideNav = (open) => {
+   
+    setState({ ...state, isSideNavOpen: open });
+  }; 
+
+
+
   return (
     <Router>
       <div>
         <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/dashboard">Dashboard</Link>
-            </li>
-          </ul>
+          <NavBar open={state.isSideNavOpen} onToggleSideNav={toggleSideNav}/>
         </nav>
-
-      
+        <SideNav open={state.isSideNavOpen} onToggleSideNav={toggleSideNav}/>
         <Switch>
           <Route path="/dashboard">
             <Dashboard />
