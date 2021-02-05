@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/PlainOlFred/big-helper-volunteering-cms#readme",
   "dependencies": {
+    "@material-ui/data-grid": "^4.0.0-alpha.18",
     "@material-ui/icons": "^4.11.2",
     "concurrently": "^5.3.0",
     "dotenv": "^8.2.0",

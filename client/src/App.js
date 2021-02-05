@@ -9,6 +9,7 @@ import './App.css';
 
 // Containers
 import Dashboard from "./containers/Dashboard";
+import Volunteers from "./containers/Volunteers";
 
 // Components
 import NavBar from './components/NavBar'
@@ -67,9 +68,6 @@ function Profile() {
 }
 function Projects() {
   return <h2>Projects</h2>;
-}
-function Volunteers() {
-  return <h2>Volunteers</h2>;
 }
 function Charity() {
   return <h2>Charity</h2>
