@@ -38,6 +38,18 @@ function App() {
           <Route path="/dashboard">
             <Dashboard />
           </Route>
+          <Route path="/projects">
+            <Projects />
+          </Route>
+          <Route path="/volunteers">
+            <Volunteers />
+          </Route>
+          <Route path="/charity">
+            <Charity />
+          </Route>
+          <Route path="/profile">
+            <Profile />
+          </Route>
           <Route path="/">
             <Home />
           </Route>
@@ -49,6 +61,18 @@ function App() {
 
 function Home() {
   return <h2>Home</h2>;
+}
+function Profile() {
+  return <h2>Profile</h2>;
+}
+function Projects() {
+  return <h2>Projects</h2>;
+}
+function Volunteers() {
+  return <h2>Volunteers</h2>;
+}
+function Charity() {
+  return <h2>Charity</h2>
 }
 
 
