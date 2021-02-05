@@ -7,6 +7,10 @@ import {
 } from "react-router-dom";
 import './App.css';
 
+// Containers
+import Dashboard from "./containers/Dashboard";
+
+// Components
 import NavBar from './components/NavBar'
 import SideNav from './components/SideNav';
 
@@ -47,9 +51,7 @@ function Home() {
   return <h2>Home</h2>;
 }
 
-function Dashboard() {
-  return <h2>Dashboard</h2>;
-}
+
 
 
 export default App;
