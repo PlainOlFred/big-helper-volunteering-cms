@@ -10,6 +10,7 @@ import './App.css';
 // Containers
 import Dashboard from "./containers/Dashboard";
 import Volunteers from "./containers/Volunteers";
+import Projects from "./containers/Projects";
 
 // Components
 import NavBar from './components/NavBar'
@@ -64,10 +65,7 @@ function Home() {
   return <h2>Home</h2>;
 }
 function Profile() {
-  return <h2>Profile</h2>;
-}
-function Projects() {
-  return <h2>Projects</h2>;
+  return <h2>Profile</h2>
 }
 function Charity() {
   return <h2>Charity</h2>
