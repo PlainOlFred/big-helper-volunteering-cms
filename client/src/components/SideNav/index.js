@@ -8,7 +8,7 @@ import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import {Laptop, Person, EmojiPeople, Group} from "@material-ui/icons";
+import {Laptop, Person, EmojiPeople, Group, LocalFlorist} from "@material-ui/icons";
 
 
 import { Link } from "react-router-dom";
@@ -41,7 +41,7 @@ function SideNav(props) {
         <ListItem button>
           <Link to='/projects'>
             <ListItemIcon>
-              <Laptop />
+              <LocalFlorist />
             </ListItemIcon>
             <ListItemText primary={"Projects"} />
           </Link>
