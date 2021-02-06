@@ -18,6 +18,9 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Typography from "@material-ui/core/Typography";
 import FolderIcon from "@material-ui/icons/Folder";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { Alarm, Person,AddBox, Close, Edit } from "@material-ui/icons";
+
+import { Doughnut, Bar } from "react-chartjs-2";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,37 +35,68 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
   },
-  paper: {
+  bottomPaper: {
     padding: theme.spacing(2),
     display: "flex",
     overflow: "auto",
     flexDirection: "column",
+    height: "30vh",
+    position: "relative",
   },
+  topPaper: {
+    padding: theme.spacing(2),
+    display: "flex",
+    overflow: "auto",
+    flexDirection: "column",
+    height: "45vh",
+    position: "relative",
+  },
+  list: {
+    overflow: "auto",
+  },
+  projectDescription: {
+    marginLeft: "2em",
+    display: 'inline'
+  }
 }));
 
 function Project() {
   const classes = useStyles();
 
   function generate(element) {
-    return [0, 1, 2].map((value) =>
+    return [0, 1, 2, 4, 5, 6].map((value) =>
       React.cloneElement(element, {
         key: value,
       })
     );
   }
 
+  const taskData = (assigned, progress, complete) => ({
+    datasets: [
+      {
+        data: [assigned, progress, complete],
+        backgroundColor: ["red", "green", "blue"],
+      },
+    ],
+    labels: ["Assigned", "Progress", "Completed"],
+  });
+
   return (
     <Container maxWidth='lg' className={classes.container}>
       <Grid container spacing={3}>
         {/* Project Details */}
         <Grid item xs={12} md={8} lg={9}>
-          <Paper>
+          <Paper className={classes.topPaper}>
             <h1>Projects Name - Team leader</h1>
-            <h4>Projects Name - Team leader</h4>
+            <h4>Taks</h4>
 
             {/* Tasks list */}
-            <h2>Taks -- add Task</h2>
-            <List>
+            <List className={classes.list}>
+              <ListItem >
+                  <ListItemIcon>
+                    <AddBox />
+                  </ListItemIcon> 
+                </ListItem>
               {generate(
                 <ListItem>
                   <ListItemIcon>
@@ -74,10 +108,20 @@ function Project() {
                     //   inputProps={{ "aria-labelledby": labelId }}
                     />
                   </ListItemIcon>
-                  <ListItemText primary='Single-line item' />
+                  <ListItemText primary={
+                      <React.Fragment>
+                        <Typography display="inline">
+                          Single-line item
+                        </Typography>
+                        
+                        <Typography className={classes.projectDescription}>
+                          Blah Blah Blah Blah Blah
+                        </Typography>
+                      </React.Fragment>
+                      } />
                   <ListItemSecondaryAction>
                     <IconButton edge='end' aria-label='delete'>
-                      <DeleteIcon />
+                      <Edit />
                     </IconButton>
                   </ListItemSecondaryAction>
                 </ListItem>
@@ -88,34 +132,77 @@ function Project() {
 
         {/* Overall Tasks */}
         <Grid item xs={12} md={4} lg={3}>
-          <Paper>
+          <Paper className={classes.topPaper}>
             <h1>Tasks Status</h1>
+            <Doughnut
+                data={() => taskData(10, 20, 10)}
+                height={50}
+                width={50}
+                options={{
+                  cutoutPercentage: 0,
+                  rotation: -0.75 * Math.PI,
+                  circumference: 2 * Math.PI,
+                }}
+              />
+          </Paper>
+        </Grid>
+
+        
+
+        {/* Alerts  */}
+        <Grid item xs={12} md={6}>
+          <Paper className={classes.bottomPaper}>
+            <h1>Alerts</h1>
+            <List className={classes.list}>
+                {generate(
+                  <ListItem>
+                    <ListItemIcon>
+                      <Alarm />
+                    </ListItemIcon>
+                    <ListItemText primary={
+                      <React.Fragment>
+                        <Typography display="inline">
+                          Single-line item
+                        </Typography>
+                      </React.Fragment>
+                      } />
+                    <ListItemSecondaryAction>
+                      <IconButton edge='end' aria-label='delete'>
+                        <Edit />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                )}
+              </List>
           </Paper>
         </Grid>
 
         {/* Volunteer list */}
         <Grid item xs={12} md={6}>
-          <Paper className={classes.paper}>
-            <h1>Volunteers -- add volunteer</h1>
-            <List>
+          <Paper className={classes.bottomPaper}>
+            <h1>Volunteers</h1>
+            <List className={classes.list}>
+              <ListItem >
+                  <ListItemIcon>
+                    <AddBox />
+                  </ListItemIcon> 
+                </ListItem>
               {generate(
                 <ListItem>
-                  <ListItemText primary='Single-line item' />
+                  <ListItemIcon>
+                      <Person />
+                    </ListItemIcon>
+                  <ListItemText 
+                    primary='Single-line item' 
+                    />
                   <ListItemSecondaryAction>
                     <IconButton edge='end' aria-label='delete'>
-                      <DeleteIcon />
+                      <Edit />
                     </IconButton>
                   </ListItemSecondaryAction>
                 </ListItem>
               )}
             </List>
-          </Paper>
-        </Grid>
-
-        {/* Alerts  */}
-        <Grid item xs={12} md={6}>
-          <Paper className={classes.paper}>
-            <h1>Alerts</h1>
           </Paper>
         </Grid>
       </Grid>
