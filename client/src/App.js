@@ -11,6 +11,7 @@ import './App.css';
 import Dashboard from "./containers/Dashboard";
 import Volunteers from "./containers/Volunteers";
 import Projects from "./containers/Projects";
+import Profile from "./containers/Profile";
 
 // Components
 import NavBar from './components/NavBar'
@@ -64,9 +65,7 @@ function App() {
 function Home() {
   return <h2>Home</h2>;
 }
-function Profile() {
-  return <h2>Profile</h2>
-}
+
 function Charity() {
   return <h2>Charity</h2>
 }
