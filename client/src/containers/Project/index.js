@@ -18,7 +18,10 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Typography from "@material-ui/core/Typography";
 import FolderIcon from "@material-ui/icons/Folder";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { Alarm, Person,AddBox, Close, Edit } from "@material-ui/icons";
+import { Alarm, Person, AddBox, Close, Edit } from "@material-ui/icons";
+import Popover from "@material-ui/core/Popover";
+
+import Button from "@material-ui/core/Button";
 
 import { Doughnut, Bar } from "react-chartjs-2";
 
@@ -56,9 +59,79 @@ const useStyles = makeStyles((theme) => ({
   },
   projectDescription: {
     marginLeft: "2em",
-    display: 'inline'
-  }
+    display: "inline",
+  },
+  status: {
+    display: "inline",
+  },
 }));
+
+function StatusPopover(props) {
+  const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleListItemClick = (value) => {
+    //update status
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+
+  const { status } = props;
+
+  return (
+    <div className={classes.status}>
+      <Button
+        aria-describedby={id}
+        variant='contained'
+        color='primary'
+        onClick={handleClick}
+      >
+        {status[0]}
+      </Button>
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+      >
+        <Typography className={classes.typography}>
+          <List>
+            {status.map((stat) => (
+              <ListItem
+                button
+                onClick={() => handleListItemClick(stat)}
+                key={stat}
+              >
+                <ListItemAvatar>
+                  <Avatar className={classes.avatar}></Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={stat} />
+              </ListItem>
+            ))}
+          </List>
+        </Typography>
+      </Popover>
+    </div>
+  );
+}
 
 function Project() {
   const classes = useStyles();
@@ -81,6 +154,9 @@ function Project() {
     labels: ["Assigned", "Progress", "Completed"],
   });
 
+  // Status
+  const status = ["Review", "Assigned", "In Progress", "Completed"];
+
   return (
     <Container maxWidth='lg' className={classes.container}>
       <Grid container spacing={3}>
@@ -92,33 +168,30 @@ function Project() {
 
             {/* Tasks list */}
             <List className={classes.list}>
-              <ListItem >
-                  <ListItemIcon>
-                    <AddBox />
-                  </ListItemIcon> 
-                </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <AddBox />
+                </ListItemIcon>
+              </ListItem>
               {generate(
                 <ListItem>
-                  <ListItemIcon>
-                    <Checkbox
-                      edge='start'
-                      checked={true}
-                      tabIndex={-1}
-                      disableRipple
-                    //   inputProps={{ "aria-labelledby": labelId }}
-                    />
-                  </ListItemIcon>
-                  <ListItemText primary={
+                  <ListItemText
+                    primary={
                       <React.Fragment>
-                        <Typography display="inline">
+                        <Typography display='inline'>
                           Single-line item
                         </Typography>
-                        
+
+                        <Typography className={classes.projectDescription}>
+                          <StatusPopover status={status} />
+                        </Typography>
+
                         <Typography className={classes.projectDescription}>
                           Blah Blah Blah Blah Blah
                         </Typography>
                       </React.Fragment>
-                      } />
+                    }
+                  />
                   <ListItemSecondaryAction>
                     <IconButton edge='end' aria-label='delete'>
                       <Edit />
@@ -135,45 +208,45 @@ function Project() {
           <Paper className={classes.topPaper}>
             <h1>Tasks Status</h1>
             <Doughnut
-                data={() => taskData(10, 20, 10)}
-                height={50}
-                width={50}
-                options={{
-                  cutoutPercentage: 0,
-                  rotation: -0.75 * Math.PI,
-                  circumference: 2 * Math.PI,
-                }}
-              />
+              data={() => taskData(10, 20, 10)}
+              height={50}
+              width={50}
+              options={{
+                cutoutPercentage: 0,
+                rotation: -0.75 * Math.PI,
+                circumference: 2 * Math.PI,
+              }}
+            />
           </Paper>
         </Grid>
-
-        
 
         {/* Alerts  */}
         <Grid item xs={12} md={6}>
           <Paper className={classes.bottomPaper}>
             <h1>Alerts</h1>
             <List className={classes.list}>
-                {generate(
-                  <ListItem>
-                    <ListItemIcon>
-                      <Alarm />
-                    </ListItemIcon>
-                    <ListItemText primary={
+              {generate(
+                <ListItem>
+                  <ListItemIcon>
+                    <Alarm />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
                       <React.Fragment>
-                        <Typography display="inline">
+                        <Typography display='inline'>
                           Single-line item
                         </Typography>
                       </React.Fragment>
-                      } />
-                    <ListItemSecondaryAction>
-                      <IconButton edge='end' aria-label='delete'>
-                        <Edit />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                )}
-              </List>
+                    }
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton edge='end' aria-label='delete'>
+                      <Edit />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              )}
+            </List>
           </Paper>
         </Grid>
 
@@ -182,19 +255,17 @@ function Project() {
           <Paper className={classes.bottomPaper}>
             <h1>Volunteers</h1>
             <List className={classes.list}>
-              <ListItem >
-                  <ListItemIcon>
-                    <AddBox />
-                  </ListItemIcon> 
-                </ListItem>
+              <ListItem>
+                <ListItemIcon>
+                  <AddBox />
+                </ListItemIcon>
+              </ListItem>
               {generate(
                 <ListItem>
                   <ListItemIcon>
-                      <Person />
-                    </ListItemIcon>
-                  <ListItemText 
-                    primary='Single-line item' 
-                    />
+                    <Person />
+                  </ListItemIcon>
+                  <ListItemText primary='Single-line item' />
                   <ListItemSecondaryAction>
                     <IconButton edge='end' aria-label='delete'>
                       <Edit />
