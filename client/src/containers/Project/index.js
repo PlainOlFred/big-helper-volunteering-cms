@@ -29,6 +29,15 @@ import MenuItem from "@material-ui/core/MenuItem";
 
 import { Doughnut, Bar } from "react-chartjs-2";
 
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useParams,
+  useRouteMatch,
+} from "react-router-dom";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -90,6 +99,10 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     width: "25ch",
+  },
+  volunteers: {
+    display: "flex",
+    flexDirection: "column",
   },
 }));
 
@@ -176,16 +189,15 @@ function getModalStyle() {
 
 function EditTaskModal() {
   const classes = useStyles();
-  // getModalStyle is not a pure function, we roll the style only on the first render
 
   const curTask = "Clean gutters";
   const curDesc = "climb up and clean gutter";
   const curStatus = "review";
+
   const [modalStyle] = React.useState(getModalStyle);
 
   const [open, setOpen] = React.useState(false);
 
-  const [status, setstatus] = React.useState(curStatus);
   const [task, setTask] = React.useState({
     title: curTask,
     description: curDesc,
@@ -308,6 +320,193 @@ function EditTaskModal() {
   );
 }
 
+function AddTaskModal() {
+  const classes = useStyles();
+
+  const curTask = " ";
+  const curDesc = " ";
+
+  const [modalStyle] = React.useState(getModalStyle);
+
+  const [open, setOpen] = React.useState(false);
+
+  const [task, setTask] = React.useState({
+    title: curTask,
+    description: curDesc,
+    status: "assigned",
+  });
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleInputChange = (event) => {
+    setTask({
+      ...task,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleTaskSubmit = () => {
+    console.log("submit", task);
+    setOpen(false);
+  };
+
+  const body = (
+    <div style={modalStyle} className={classes.taskEditPaper}>
+      <h2 id='edit-task-modal-title'>Task: {curTask}</h2>
+      <p id='edit-task-description'>Add Task Title, and Description</p>
+      <div className={classes.taskEditForm} noValidate autoComplete='off'>
+        <div>
+          <TextField
+            required
+            fullWidth
+            className={classes.textField}
+            id='edit-task-title'
+            label='Task Title'
+            defaultValue={curTask}
+            variant='outlined'
+            name='title'
+            value={task.title}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div>
+          <TextField
+            required
+            multiline
+            fullWidth
+            rows={4}
+            className={classes.textField}
+            id='edit-task-description'
+            label='Task Title'
+            defaultValue={curDesc}
+            variant='outlined'
+            name='description'
+            value={task.description}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <Button variant='contained' color='primary' onClick={handleTaskSubmit}>
+          Add Task
+        </Button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      <IconButton edge='end' aria-label='add' onClick={handleOpen}>
+        <AddBox />
+      </IconButton>
+
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby='add-task-modal-title'
+        aria-describedby='add-taskl-description'
+      >
+        {body}
+      </Modal>
+    </div>
+  );
+}
+
+function AssignVolunteerModal() {
+  const classes = useStyles();
+  const [modalStyle] = React.useState(getModalStyle);
+  const [open, setOpen] = React.useState(false);
+
+  const [volunteers, setVolunteers] = React.useState([1]);
+
+  const handleToggle = (value) => () => {
+    const currentIndex = volunteers.indexOf(value);
+    const newVoluntees = [...volunteers];
+
+    if (currentIndex === -1) {
+      newVoluntees.push(value);
+    } else {
+      newVoluntees.splice(currentIndex, 1);
+    }
+
+    setVolunteers(newVoluntees);
+  };
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleVolunteerCheck = (event) => {};
+
+  const handleTaskSubmit = () => {
+    console.log("submit", volunteers);
+    setOpen(false);
+  };
+
+  const body = (
+    <div style={modalStyle} className={classes.taskEditPaper}>
+      <h2 id='edit-task-modal-title'>Voulunteers</h2>
+      <p id='edit-task-description'>Add Volunteers to this Project</p>
+      <div className={classes.taskEditForm} noValidate autoComplete='off'>
+        <div>
+          <List dense className={classes.volunteers}>
+            {[0, 1, 2, 3].map((value) => {
+              const labelId = `checkbox-list-secondary-label-${value}`;
+              return (
+                <ListItem key={value} button>
+                  <ListItemAvatar></ListItemAvatar>
+                  <ListItemText
+                    id={labelId}
+                    primary={`Line item ${value + 1}`}
+                  />
+                  <ListItemSecondaryAction>
+                    <Checkbox
+                      edge='end'
+                      onChange={handleToggle(value)}
+                      checked={volunteers.indexOf(value) !== -1}
+                      inputProps={{ "aria-labelledby": labelId }}
+                    />
+                  </ListItemSecondaryAction>
+                </ListItem>
+              );
+            })}
+          </List>
+        </div>
+
+        <Button variant='contained' color='primary' onClick={handleTaskSubmit}>
+          Add Volunteers
+        </Button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      <IconButton edge='end' aria-label='add' onClick={handleOpen}>
+        <AddBox />
+      </IconButton>
+
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby='add-task-modal-title'
+        aria-describedby='add-taskl-description'
+      >
+        {body}
+      </Modal>
+    </div>
+  );
+}
+
 function Project() {
   const classes = useStyles();
 
@@ -329,6 +528,16 @@ function Project() {
     labels: ["Assigned", "Progress", "Completed"],
   });
 
+  const handleAssignVolunteer = () => {};
+
+  const handleUnassignVolunteer = () => {
+    console.log("unassign Voulunteer");
+  };
+
+  const handleRemoveAlert = () => {
+    console.log("Remove Alert");
+  };
+
   // Status
   const status = ["Review", "Assigned", "In Progress", "Completed"];
 
@@ -345,7 +554,7 @@ function Project() {
             <List className={classes.list}>
               <ListItem>
                 <ListItemIcon>
-                  <AddBox />
+                  <AddTaskModal />
                 </ListItemIcon>
               </ListItem>
               {generate(
@@ -413,8 +622,13 @@ function Project() {
                     }
                   />
                   <ListItemSecondaryAction>
-                    <IconButton edge='end' aria-label='delete'>
-                      <Edit />
+                    <IconButton
+                      edge='end'
+                      aria-label='delete'
+                      onClick={handleRemoveAlert}
+                    >
+                      {/* !TODO: Change status of alert and render different Icon  */}
+                      <Close />
                     </IconButton>
                   </ListItemSecondaryAction>
                 </ListItem>
@@ -430,18 +644,24 @@ function Project() {
             <List className={classes.list}>
               <ListItem>
                 <ListItemIcon>
-                  <AddBox />
+                  <AssignVolunteerModal />
                 </ListItemIcon>
               </ListItem>
               {generate(
                 <ListItem>
                   <ListItemIcon>
-                    <Person />
+                    <Link to={`/volunteers/${"1"}`}>
+                      <Person />
+                    </Link>
                   </ListItemIcon>
                   <ListItemText primary='Single-line item' />
                   <ListItemSecondaryAction>
-                    <IconButton edge='end' aria-label='delete'>
-                      <Edit />
+                    <IconButton
+                      edge='end'
+                      aria-label='delete'
+                      onClick={handleUnassignVolunteer}
+                    >
+                      <Close />
                     </IconButton>
                   </ListItemSecondaryAction>
                 </ListItem>
