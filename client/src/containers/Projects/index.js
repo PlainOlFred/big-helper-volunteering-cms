@@ -10,10 +10,24 @@ import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Typography from "@material-ui/core/Typography";
 import Slider from "@material-ui/core/Slider";
 import FormControl from "@material-ui/core/FormControl";
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Select from '@material-ui/core/Select';
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import Select from "@material-ui/core/Select";
+
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useParams,
+  useRouteMatch,
+} from "react-router-dom";
+
+import { AddBox } from "@material-ui/icons";
+
+// Components and Container
+import Project from "../Project";
 
 import { projectSample } from "./utils";
 
@@ -39,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
   slider: {
     width: 200,
   },
-   formControl: {
+  formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
   },
@@ -47,13 +61,18 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   filterSection: {
-      display: "flex",
-      justifyContent: "space-around"
-  }
+    display: "flex",
+    justifyContent: "space-around",
+  },
+  title: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
 }));
 
 function Volunteers() {
   const classes = useStyles();
+  let { path, url } = useRouteMatch();
 
   const [value, setValue] = React.useState([20, 37]);
 
@@ -64,7 +83,9 @@ function Volunteers() {
   const rows: RowsProp = [...projectSample];
 
   const columns: ColDef[] = [
-    { field: "project", headerName: "Project Name", width: 150 },
+    { field: "project", headerName: "Project Name", width: 150, renderCell: (params: ValueFormatterParams) => (
+        <Link to={`${url}/${params.getValue('id')}`}>{params.value}</Link>
+      ), },
     { field: "charity", headerName: "Charity", width: 150 },
     { field: "email", headerName: "Charity Email", width: 200 },
     { field: "startDate", headerName: "Start Date", width: 150 },
@@ -74,7 +95,6 @@ function Volunteers() {
       width: 200,
       renderCell: (params: ValueFormatterParams) => (
         <Box
-        
           color='palevioletred'
           bgcolor='palevioletred'
           width={`${params.value * 100}%`}
@@ -87,7 +107,7 @@ function Volunteers() {
     {
       field: "completeDate",
       headerName: "Completion Date",
-      width: 200
+      width: 200,
     },
   ];
 
@@ -97,63 +117,82 @@ function Volunteers() {
 
   return (
     <main className={classes.root}>
-      <Container maxWidth='lg' className={classes.container}>
-        <Grid container spacing={3}>
-          {/* Volunteers */}
-          <Grid item xs={12}>
-            <Paper>
-              <h1>Projects</h1>
-              <Box className={classes.filterSection}>
-                {/* Role Button Filter */}
-                <ButtonGroup
-                  color='primary'
-                  aria-label='outlined primary button group'
-                >
-                  <Button>Assigned</Button>
-                  <Button>In Progress</Button>
-                  <Button>Complete</Button>
-                </ButtonGroup>
-                {/* Progress Silder */}
-                <div className={classes.slider}>
-                  <Typography id='range-slider' gutterBottom>
-                    Completion Range
-                  </Typography>
-                  <Slider
-                    value={value}
-                    onChange={handleChange}
-                    valueLabelDisplay='auto'
-                    aria-labelledby='range-slider'
-                    getAriaValueText={(value) => value}
-                  />
-                </div>
+      <Switch>
+        <Route exact path={path}>
+          <Container maxWidth='lg' className={classes.container}>
+            <Grid container spacing={3}>
+              {/* Volunteers */}
+              <Grid item xs={12}>
+                <Paper>
+                  <Box className={classes.title}>
+                    <h1>Projects</h1>
 
-                {/* Team Dropdown */}
-                <FormControl variant='outlined' className={classes.formControl}>
-                  <InputLabel id='team-select'>
-                    Charity
-                  </InputLabel>
-                  <Select
-                    labelId='team-select'
-                    id='team-select'
-                    value={"10"}
-                    onChange={handleChange}
-                    label='Age'
-                  >
-                    <MenuItem value=''>
-                      <em>Any</em>
-                    </MenuItem>
-                    <MenuItem value={"10"}>Helping Hands</MenuItem>
-                    <MenuItem value={"20"}>One For One</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
-              <div style={{ height: 300, width: "100%" }}>
-                <DataGrid rows={rows} columns={columns} />
-              </div>
-            </Paper>
-          </Grid>
-        </Grid>
-      </Container>
+                    <ButtonGroup
+                      color='primary'
+                      aria-label='primary button group'
+                    >
+                      <Button>
+                        <AddBox fontSize='large' />
+                      </Button>
+                    </ButtonGroup>
+                  </Box>
+                  <Box className={classes.filterSection}>
+                    {/* Role Button Filter */}
+                    <ButtonGroup
+                      color='primary'
+                      aria-label='outlined primary button group'
+                    >
+                      <Button>Assigned</Button>
+                      <Button>In Progress</Button>
+                      <Button>Complete</Button>
+                    </ButtonGroup>
+                    {/* Progress Silder */}
+                    <div className={classes.slider}>
+                      <Typography id='range-slider' gutterBottom>
+                        Completion Range
+                      </Typography>
+                      <Slider
+                        value={value}
+                        onChange={handleChange}
+                        valueLabelDisplay='auto'
+                        aria-labelledby='range-slider'
+                        getAriaValueText={(value) => value}
+                      />
+                    </div>
+
+                    {/* Team Dropdown */}
+                    <FormControl
+                      variant='outlined'
+                      className={classes.formControl}
+                    >
+                      <InputLabel id='team-select'>Charity</InputLabel>
+                      <Select
+                        labelId='team-select'
+                        id='team-select'
+                        value={"10"}
+                        onChange={handleChange}
+                        label='Age'
+                      >
+                        <MenuItem value=''>
+                          <em>Any</em>
+                        </MenuItem>
+                        <MenuItem value={"10"}>Helping Hands</MenuItem>
+                        <MenuItem value={"20"}>One For One</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Box>
+                  <div style={{ height: 300, width: "100%" }}>
+                    <DataGrid rows={rows} columns={columns} />
+                  </div>
+                </Paper>
+              </Grid>
+            </Grid>
+          </Container>
+        </Route>
+        <Route path={`${path}/:projectId`}>
+          <Project />
+        </Route>
+      </Switch>
     </main>
   );
 }

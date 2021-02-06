@@ -14,8 +14,20 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Select from '@material-ui/core/Select';
+import {Person} from "@material-ui/icons";
 
 import { volunteerSample } from "./utils";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useParams,
+  useRouteMatch,
+} from "react-router-dom";
+
+// Components and Container
+import Volunteer from "../Volunteer";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,11 +61,16 @@ const useStyles = makeStyles((theme) => ({
   filterSection: {
       display: "flex",
       justifyContent: "space-around"
-  }
+  },
+   title: {
+    display: "flex",
+    justifyContent: "space-between",
+  },
 }));
 
 function Volunteers() {
   const classes = useStyles();
+  let { path, url } = useRouteMatch();
 
   const [value, setValue] = React.useState([20, 37]);
 
@@ -64,7 +81,10 @@ function Volunteers() {
   const rows: RowsProp = [...volunteerSample];
 
   const columns: ColDef[] = [
-    { field: "lastName", headerName: "Last Name", width: 150 },
+    { field: "icon", headerName: " ", width: 50, renderCell: (params: ValueFormatterParams) => (
+        <Link to={`${url}/${params.getValue('id')}`}><Person /></Link>
+      ) },
+    { field: "lastName", headerName: "Last Name", width: 150,  },
     { field: "firstName", headerName: "First Name", width: 150 },
     { field: "email", headerName: "Email", width: 200 },
     { field: "locationRole", headerName: "Role", width: 100 },
@@ -110,12 +130,22 @@ function Volunteers() {
 
   return (
     <main className={classes.root}>
-      <Container maxWidth='lg' className={classes.container}>
+      <Switch>
+        <Route exact path={path}>
+          <Container maxWidth='lg' className={classes.container}>
         <Grid container spacing={3}>
           {/* Volunteers */}
           <Grid item xs={12}>
             <Paper>
-              <h1>Volunteers</h1>
+              <Box className={classes.title}>
+                <h1>Volunteers</h1>
+                <ButtonGroup
+                  color='primary'
+                  aria-label='outlined primary button group'
+                >
+                  <Button>Add Volunteer</Button>
+                </ButtonGroup>
+              </Box>
               <Box className={classes.filterSection}>
                 {/* Role Button Filter */}
                 <ButtonGroup
@@ -186,6 +216,14 @@ function Volunteers() {
           </Grid>
         </Grid>
       </Container>
+
+        </Route>
+        <Route path={`${path}/:volunteerId`}>
+          <Volunteer />
+        </Route>
+
+      </Switch>
+      
     </main>
   );
 }
