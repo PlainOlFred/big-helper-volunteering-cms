@@ -14,6 +14,11 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Select from "@material-ui/core/Select";
+import IconButton from "@material-ui/core/IconButton";
+import { Alarm, Person, AddBox, Close, Edit } from "@material-ui/icons";
+
+import TextField from "@material-ui/core/TextField";
+import Modal from "@material-ui/core/Modal";
 
 import {
   BrowserRouter as Router,
@@ -23,8 +28,6 @@ import {
   useParams,
   useRouteMatch,
 } from "react-router-dom";
-
-import { AddBox } from "@material-ui/icons";
 
 // Components and Container
 import Project from "../Project";
@@ -68,9 +71,196 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
   },
+  projectEditPaper: {
+    position: "absolute",
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+  projectEditForm: {
+    display: "flex",
+    flexDirection: "column",
+    flexWrap: "warp",
+  },
+  editTask: {
+    display: "flex",
+    flexWrap: "wrap",
+  },
+  textField: {
+    marginBottom: theme.spacing(5),
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: "25ch",
+  },
+  dateField: {
+    marginBottom: theme.spacing(5),
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: "40%",
+  },
 }));
 
-function Volunteers() {
+function getModalStyle() {
+  const top = 50;
+  const left = 50;
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+    height: 500,
+  };
+}
+
+function AddProjectModal() {
+  const classes = useStyles();
+
+  const curTitle = "New Project";
+  const curCharity = "Helping Hands";
+
+  const [modalStyle] = React.useState(getModalStyle);
+
+  const [open, setOpen] = React.useState(false);
+
+  const charitySelect = [
+    { value: "helpHands", label: "Helping Hands" },
+    { value: "OneForOne", label: "One For One" },
+  ];
+
+  const [project, setProject] = React.useState({
+    title: curTitle,
+    charity: curCharity,
+    startDate: "1-1-1990",
+    dueDate: "1-1-1990",
+  });
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleCharityChange = (event) => {
+    setProject({
+      ...project,
+      charity: event.target.value,
+    });
+  };
+
+  const handleInputChange = (event) => {
+    setProject({
+      ...project,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleProjectSubmit = () => {
+    console.log("submit", project);
+    setOpen(false);
+  };
+
+  const body = (
+    <div style={modalStyle} className={classes.projectEditPaper}>
+      <h2 id='create-project-modal-title'>Project {project.title}</h2>
+      <p id='create-project-description'>Add a new Project Task Title, Status, and Description</p>
+      <div className={classes.projectEditForm} noValidate autoComplete='off'>
+        <div>
+          <TextField
+            required
+            fullWidth
+            className={classes.textField}
+            id='create-project-title'
+            label='Project Title'
+            defaultValue={curTitle}
+            variant='outlined'
+            name='title'
+            value={project.title}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div>
+          <TextField
+            select
+            fullWidth
+            className={classes.textField}
+            id='create-project-charity'
+            label='Charity'
+            value={project.charity}
+            defaultValue={charitySelect[0]}
+            onChange={handleCharityChange}
+            helperText='Update Status'
+            variant='outlined'
+          >
+            {charitySelect.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </div>
+
+        <div>
+          <TextField
+        id="date"
+        label="Start Date"
+        type="date"
+        defaultValue="2017-05-24"
+        className={classes.dateField}
+        InputLabelProps={{
+          shrink: true,
+        }}
+        name="startDate"
+        onChange={handleInputChange}
+      />
+      <TextField
+        id="date"
+        label="Due Date"
+        type="date"
+        defaultValue="2017-05-24"
+        className={classes.dateField}
+        InputLabelProps={{
+          shrink: true,
+        }}
+        name="dueDate"
+        onChange={handleInputChange}
+      />
+        </div>
+
+        <Button
+          variant='contained'
+          color='primary'
+          onClick={handleProjectSubmit}
+        >
+          Add Project
+        </Button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      <IconButton edge='end' aria-label='edit' onClick={handleOpen}>
+        <AddBox fontSize='large' />
+      </IconButton>
+
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby='create-project-modal-title'
+        aria-describedby='create-project-description'
+      >
+        {body}
+      </Modal>
+    </div>
+  );
+}
+
+function Projects() {
   const classes = useStyles();
   let { path, url } = useRouteMatch();
 
@@ -83,9 +273,14 @@ function Volunteers() {
   const rows: RowsProp = [...projectSample];
 
   const columns: ColDef[] = [
-    { field: "project", headerName: "Project Name", width: 150, renderCell: (params: ValueFormatterParams) => (
-        <Link to={`${url}/${params.getValue('id')}`}>{params.value}</Link>
-      ), },
+    {
+      field: "project",
+      headerName: "Project Name",
+      width: 150,
+      renderCell: (params: ValueFormatterParams) => (
+        <Link to={`${url}/${params.getValue("id")}`}>{params.value}</Link>
+      ),
+    },
     { field: "charity", headerName: "Charity", width: 150 },
     { field: "email", headerName: "Charity Email", width: 200 },
     { field: "startDate", headerName: "Start Date", width: 150 },
@@ -132,7 +327,7 @@ function Volunteers() {
                       aria-label='primary button group'
                     >
                       <Button>
-                        <AddBox fontSize='large' />
+                        <AddProjectModal />
                       </Button>
                     </ButtonGroup>
                   </Box>
@@ -197,4 +392,4 @@ function Volunteers() {
   );
 }
 
-export default Volunteers;
+export default Projects;

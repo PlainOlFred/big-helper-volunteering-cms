@@ -26,9 +26,18 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Select from "@material-ui/core/Select";
 
-import { Alarm, LocalFlorist } from "@material-ui/icons";
+import { Alarm, LocalFlorist, Close } from "@material-ui/icons";
 
 import { Doughnut, Bar } from "react-chartjs-2";
+
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useParams,
+  useRouteMatch,
+} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -114,6 +123,11 @@ function Dashboard() {
     );
   }
 
+  const handleAlertClick = () => { 
+    // should update status
+    console.log("handle alert")
+  }
+
   return (
     <main className={classes.root}>
       <Container maxWidth='lg' className={classes.container}>
@@ -171,8 +185,8 @@ function Dashboard() {
                     </ListItemIcon>
                     <ListItemText primary='Single-line item' />
                     <ListItemSecondaryAction>
-                      <IconButton edge='end' aria-label='delete'>
-                        <DeleteIcon />
+                      <IconButton edge='end' aria-label='delete' onClick={handleAlertClick}>
+                        <Close />
                       </IconButton>
                     </ListItemSecondaryAction>
                   </ListItem>
@@ -189,14 +203,12 @@ function Dashboard() {
                 {generate(
                   <ListItem>
                     <ListItemIcon>
+                      <Link to={`/projects/${"1"}`}>
+                    
                       <LocalFlorist />
+                    </Link>
                     </ListItemIcon>
                     <ListItemText primary='Single-line item' />
-                    <ListItemSecondaryAction>
-                      <IconButton edge='end' aria-label='delete'>
-                        <DeleteIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
                   </ListItem>
                 )}
               </List>
