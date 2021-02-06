@@ -18,10 +18,20 @@ import Checkbox from "@material-ui/core/Checkbox";
 import Typography from "@material-ui/core/Typography";
 import FolderIcon from "@material-ui/icons/Folder";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { Alarm, Person,AddBox, Close, Edit } from "@material-ui/icons";
+import Box from "@material-ui/core/Box";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
+import { Alarm, Person, AddBox, Close, Edit } from "@material-ui/icons";
+
+import Popover from "@material-ui/core/Popover";
+
+import TextField from "@material-ui/core/TextField";
+import Modal from "@material-ui/core/Modal";
+import MenuItem from "@material-ui/core/MenuItem";
+
+
+import Button from "@material-ui/core/Button";
 
 import { Doughnut, Bar } from "react-chartjs-2";
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -47,17 +57,100 @@ const useStyles = makeStyles((theme) => ({
   },
   projectDescription: {
     marginLeft: "2em",
-    display: 'inline'
+    display: "inline",
   },
   projectStatus: {
     marginLeft: "2em",
-    display: 'inline',
+    display: "inline",
     backgroundColor: "green",
     padding: ".5em",
-    borderRadius: "15px", 
-    color: "gold"
-  }
+    borderRadius: "15px",
+    color: "gold",
+  },
+  status: {
+    display: "inline",
+  },
 }));
+
+// Status Popover
+function StatusPopover(props) {
+  const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleListItemClick = (value) => {
+    //update status
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+
+  const { status } = props;
+
+  return (
+    <div className={classes.status}>
+      <Button
+        aria-describedby={id}
+        variant='contained'
+        color='primary'
+        onClick={handleClick}
+      >
+        {status[0]}
+      </Button>
+      <Popover
+        id={id}
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+      >
+        <Typography className={classes.typography}>
+          <List>
+            {status.map((stat) => (
+              <ListItem
+                button
+                onClick={() => handleListItemClick(stat)}
+                key={stat}
+              >
+                <ListItemAvatar>
+                  <Avatar className={classes.avatar}></Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={stat} />
+              </ListItem>
+            ))}
+          </List>
+        </Typography>
+      </Popover>
+    </div>
+  );
+}
+
+function getModalStyle() {
+  const top = 50;
+  const left = 50;
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+    height: 500,
+  };
+}
 
 function Volunteer() {
   const classes = useStyles();
@@ -80,6 +173,8 @@ function Volunteer() {
     labels: ["Assigned", "Progress", "Completed"],
   });
 
+  const status = ["Review", "Assigned", "In Progress", "Completed"];
+
   return (
     <Container maxWidth='lg' className={classes.container}>
       <Grid container spacing={3}>
@@ -87,33 +182,39 @@ function Volunteer() {
         <Grid item xs={12} md={8} lg={9}>
           <Paper>
             <h1>Volunteer Name - Team leader</h1>
-          
+
             {/* Tasks list */}
             <h2>Taks </h2>
+            <Box className={classes.filterSection}>
+              {/* Role Button Filter */}
+              <ButtonGroup
+                color='primary'
+                aria-label='outlined primary button group'
+              >
+                <Button>Assigned</Button>
+                <Button>In Progress</Button>
+                <Button>Complete</Button>
+              </ButtonGroup>
+            </Box>
             <List>
               {generate(
                 <ListItem>
-                 
-                  <ListItemText primary={
+                  <ListItemText
+                    primary={
                       <React.Fragment>
-                        <Typography display="inline">
+                        <Typography display='inline'>
                           Single-line item
                         </Typography>
-                        
+
+                        <Typography className={classes.projectDescription}>
+                          <StatusPopover status={status} />
+                        </Typography>
                         <Typography className={classes.projectDescription}>
                           Blah Blah Blah Blah Blah
                         </Typography>
-
-                        <Typography className={classes.projectStatus}>
-                          Completed
-                        </Typography>
                       </React.Fragment>
-                      } />
-                  <ListItemSecondaryAction>
-                    <IconButton edge='end' aria-label='delete'>
-                      <Edit />
-                    </IconButton>
-                  </ListItemSecondaryAction>
+                    }
+                  />
                 </ListItem>
               )}
             </List>
@@ -125,18 +226,17 @@ function Volunteer() {
           <Paper>
             <h1>Tasks Status</h1>
             <Doughnut
-                data={() => taskData(10, 20, 10)}
-                height={50}
-                width={50}
-                options={{
-                  cutoutPercentage: 0,
-                  rotation: -0.75 * Math.PI,
-                  circumference: 2 * Math.PI,
-                }}
-              />
+              data={() => taskData(10, 20, 10)}
+              height={50}
+              width={50}
+              options={{
+                cutoutPercentage: 0,
+                rotation: -0.75 * Math.PI,
+                circumference: 2 * Math.PI,
+              }}
+            />
           </Paper>
         </Grid>
-
       </Grid>
     </Container>
   );

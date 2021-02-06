@@ -15,6 +15,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Select from '@material-ui/core/Select';
 import {Person} from "@material-ui/icons";
+import TextField from "@material-ui/core/TextField";
+import Modal from "@material-ui/core/Modal";
+import IconButton from "@material-ui/core/IconButton";
+import {  AddBox, Close, Edit } from "@material-ui/icons";
 
 import { volunteerSample } from "./utils";
 import {
@@ -66,7 +70,214 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
   },
+  volunteerEditPaper: {
+    position: "absolute",
+    width: 400,
+    backgroundColor: theme.palette.background.paper,
+    border: "2px solid #000",
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+  volunteerEditForm: {
+    display: "flex",
+    flexDirection: "column",
+    flexWrap: "warp",
+  },
+  editTask: {
+    display: "flex",
+    flexWrap: "wrap",
+  },
+  textField: {
+    marginBottom: theme.spacing(5),
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: "25ch",
+  },
+  nameField: {
+    marginBottom: theme.spacing(5),
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+    width: "40%",
+  },
 }));
+
+function getModalStyle() {
+  const top = 50;
+  const left = 50;
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+    height: 500,
+  };
+}
+
+
+function AddVolunteerModal() {
+  const classes = useStyles();
+
+
+  const [modalStyle] = React.useState(getModalStyle);
+
+  const [open, setOpen] = React.useState(false);
+
+  const teamSelect = [
+    { value: "redTeam", label: "Red Team" },
+    { value: "blueTeam", label: "Blue Team" },
+  ];
+
+  const roleSelect = [
+    { value: "admin", label: "Admin" },
+    { value: "supvisor", label: "Supervisor" },
+    { value: "team", label: "Team Member" },
+
+  ];
+
+  const [volunteer, setVolunteer] = React.useState({
+    firstName: " ",
+    lastName: " ",
+    email: " ",
+    team: "",
+    role: ""
+  
+  });
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleInputChange = (event) => {
+    setVolunteer({
+      ...volunteer,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleVolunteerSubmit = () => {
+    console.log("submit", volunteer);
+    setOpen(false);
+  };
+
+  const body = (
+    <div style={modalStyle} className={classes.volunteerEditPaper}>
+      {/* <h2 id='create-volunteer-modal-title'>{volunteer.firstName}</h2> */}
+      <p id='create-volunteer-description'>Add a new Volunteer Team and Role</p>
+      <div className={classes.volunteerEditForm} noValidate autoComplete='off'>
+        <div>
+          <TextField
+            required
+            fullWidth
+            className={classes.nameField}
+            id='create-volunteer-first-name'
+            label='First Name'
+            
+            variant='outlined'
+            name='firstName'
+            value={volunteer.firstName}
+            onChange={handleInputChange}
+          />
+        
+          <TextField
+            required
+            fullWidth
+            className={classes.nameField}
+            id='create-volunteer-first-name'
+            label='Last Name'
+            variant='outlined'
+            name='lastName'
+            value={volunteer.lastName}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div>
+          <TextField
+            required
+            fullWidth
+            className={classes.textField}
+            id='create-volunteer-first-name'
+            label='Email'
+            variant='outlined'
+            name='email'
+            value={volunteer.email}
+            onChange={handleInputChange}
+          />
+
+        </div>
+
+        <div>
+          <TextField
+            select
+            fullWidth
+            className={classes.textField}
+            id='create-volunteer-team'
+            label='Team'
+            value={volunteer.team}
+            name="team"
+            onChange={handleInputChange}
+            variant='outlined'
+          >
+            {teamSelect.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </div>
+
+        <div>
+          <TextField
+            select
+            fullWidth
+            className={classes.textField}
+            id='create-volunteer-role'
+            label='Role'
+            value={volunteer.role}
+            name="role"
+            onChange={handleInputChange}
+            variant='outlined'
+          >
+            {roleSelect.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </div>
+
+        <Button
+          variant='contained'
+          color='primary'
+          onClick={handleVolunteerSubmit}
+        >
+          Add Volunteer
+        </Button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div>
+      <IconButton edge='end' aria-label='edit' onClick={handleOpen}>
+        <AddBox fontSize='large' />
+      </IconButton>
+
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby='create-volunteer-modal-title'
+        aria-describedby='create-volunteer-description'
+      >
+        {body}
+      </Modal>
+    </div>
+  );
+}
 
 function Volunteers() {
   const classes = useStyles();
@@ -105,8 +316,8 @@ function Volunteers() {
     },
     { field: "team", headerName: "Team", width: 150 },
     {
-      field: "project",
-      headerName: "Current Project",
+      field: "volunteer",
+      headerName: "Current Volunteer",
       width: 200,
       renderCell: (params: ValueFormatterParams) => (
         <strong>
@@ -115,7 +326,7 @@ function Volunteers() {
             color='primary'
             size='small'
             style={{ marginLeft: 16 }}
-            onClick={handleProjectClick}
+            onClick={handleVolunteerClick}
           >
             {params.value}
           </Button>
@@ -124,8 +335,8 @@ function Volunteers() {
     },
   ];
 
-  const handleProjectClick = (e) => {
-    console.log("open Project");
+  const handleVolunteerClick = (e) => {
+    console.log("open Volunteer");
   };
 
   return (
@@ -143,7 +354,7 @@ function Volunteers() {
                   color='primary'
                   aria-label='outlined primary button group'
                 >
-                  <Button>Add Volunteer</Button>
+                  <AddVolunteerModal />
                 </ButtonGroup>
               </Box>
               <Box className={classes.filterSection}>
@@ -186,20 +397,20 @@ function Volunteers() {
                       <em>None</em>
                     </MenuItem>
                     <MenuItem value={"10"}>Blue Team</MenuItem>
-                    <MenuItem value={"20"}>Twenty</MenuItem>
+                    <MenuItem value={"20"}>Red Team</MenuItem>
                   </Select>
                 </FormControl>
-                {/* Project Dropdown */}
+                {/* Volunteer Dropdown */}
                 <FormControl variant='outlined' className={classes.formControl}>
-                  <InputLabel id='project-select'>
-                    Current Project
+                  <InputLabel id='volunteer-select'>
+                    Current Volunteer
                   </InputLabel>
                   <Select
-                    labelId='project-select'
-                    id='project-select'
+                    labelId='volunteer-select'
+                    id='volunteer-select'
                     value={"10"}
                     onChange={handleChange}
-                    label='Current Project'
+                    label='Current Volunteer'
                   >
                     <MenuItem value=''>
                       <em>None</em>
