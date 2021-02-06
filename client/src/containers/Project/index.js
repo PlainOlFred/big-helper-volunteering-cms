@@ -21,6 +21,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { Alarm, Person, AddBox, Close, Edit } from "@material-ui/icons";
 import Popover from "@material-ui/core/Popover";
 import TextField from "@material-ui/core/TextField";
+import Box from "@material-ui/core/Box";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
 
 import Button from "@material-ui/core/Button";
 
@@ -549,6 +551,18 @@ function Project() {
           <Paper className={classes.topPaper}>
             <h1>Projects Name - Team leader</h1>
             <h4>Taks</h4>
+
+            <Box className={classes.filterSection}>
+              {/* Role Button Filter */}
+              <ButtonGroup
+                color='primary'
+                aria-label='outlined primary button group'
+              >
+                <Button>Assigned</Button>
+                <Button>In Progress</Button>
+                <Button>Complete</Button>
+              </ButtonGroup>
+            </Box>
 
             {/* Tasks list */}
             <List className={classes.list}>
