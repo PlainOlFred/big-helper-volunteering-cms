@@ -7,9 +7,6 @@ import Box from "@material-ui/core/Box";
 
 import { Avatar } from "@material-ui/core";
 
-
-
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -31,49 +28,43 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "75vh",
     maxWidth: "50vw",
     position: "relative",
-    margin: '0 auto',
+    margin: "0 auto",
   },
   avatar: {
-      display: "flex",
-      justifyContent: "center"
+    display: "flex",
+    justifyContent: "center",
   },
   largeAva: {
-      height: "25vh",
-      width: "25vh",
-  }, 
+    height: "25vh",
+    width: "25vh",
+  },
   bio: {
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center"
-  }
-  
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
 }));
 
 function Profile() {
   const classes = useStyles();
-
- 
- 
-
-  
 
   return (
     <main className={classes.root}>
       <Container maxWidth='lg' className={classes.container}>
         <Grid container spacing={3}>
           <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                  <Box className={classes.avatar}>
-                      <Avatar className={classes.largeAva}/>
-                  </Box>
-                  <Box className={classes.bio}>
-                    <h1> Name: Demo Admin</h1>
-                    <h1>Role: Admin</h1>
-                   <h1> Volunteering Since: 2015</h1>
-                    <p> Email: demo.admin@example.com</p>
-                    <p>Total Projects: 109</p>
-                  </Box>
-              </Paper>
+            <Paper className={classes.paper}>
+              <Box className={classes.avatar}>
+                <Avatar className={classes.largeAva} />
+              </Box>
+              <Box className={classes.bio}>
+                <h1>Demo Admin</h1>
+                <h1>Role: Admin</h1>
+                <h1> Volunteering Since: 2015</h1>
+                <p> Email: demo.admin@example.com</p>
+                <p>Total Projects: 109</p>
+              </Box>
+            </Paper>
           </Grid>
         </Grid>
       </Container>
