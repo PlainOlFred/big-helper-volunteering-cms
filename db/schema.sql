@@ -15,27 +15,15 @@ CREATE SCHEMA IF NOT EXISTS `big_helper_db` DEFAULT CHARACTER SET utf8 ;
 USE `big_helper_db` ;
 
 -- -----------------------------------------------------
--- Table `big_helper_db`.`project`
+-- Table `big_helper_db`.`charity`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `big_helper_db`.`project` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `title` VARCHAR(45) NULL,
-  `date_started` DATETIME NOT NULL,
-  `date_target` DATETIME NULL,
-  `date_completed` DATETIME NULL,
-  `description` VARCHAR(100) NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
-  UNIQUE INDEX `title_UNIQUE` (`title` ASC) VISIBLE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `big_helper_db`.`team`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `big_helper_db`.`team` (
-  `team_id` INT NOT NULL,
-  PRIMARY KEY (`team_id`))
+CREATE TABLE IF NOT EXISTS `big_helper_db`.`charity` (
+  `charity_id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  `email` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`charity_id`),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE,
+  UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE)
 ENGINE = InnoDB;
 
 
@@ -48,9 +36,63 @@ CREATE TABLE IF NOT EXISTS `big_helper_db`.`volunteer` (
   `last_name` VARCHAR(45) NOT NULL,
   `location_role` VARCHAR(45) NULL,
   `team_team_id` INT NOT NULL,
-  PRIMARY KEY (`id`, `team_team_id`),
+  `charity_charity_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
   INDEX `fk_volunteer_team1_idx` (`team_team_id` ASC) VISIBLE,
+  INDEX `fk_volunteer_charity1_idx` (`charity_charity_id` ASC) VISIBLE,
   CONSTRAINT `fk_volunteer_team1`
+    FOREIGN KEY (`team_team_id`)
+    REFERENCES `big_helper_db`.`team` (`team_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_volunteer_charity1`
+    FOREIGN KEY (`charity_charity_id`)
+    REFERENCES `big_helper_db`.`charity` (`charity_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `big_helper_db`.`team`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `big_helper_db`.`team` (
+  `team_id` INT NOT NULL,
+  `name` VARCHAR(45) NULL,
+  `team_leader` INT NOT NULL,
+  PRIMARY KEY (`team_id`),
+  INDEX `team_leader_fk_idx` (`team_leader` ASC) VISIBLE,
+  CONSTRAINT `team_leader_fk`
+    FOREIGN KEY (`team_leader`)
+    REFERENCES `big_helper_db`.`volunteer` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `big_helper_db`.`project`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `big_helper_db`.`project` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NULL,
+  `date_started` DATETIME NOT NULL,
+  `date_target` DATETIME NULL,
+  `date_completed` DATETIME NULL,
+  `description` VARCHAR(100) NULL,
+  `charity_charity_id` INT NOT NULL,
+  `team_team_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
+  UNIQUE INDEX `title_UNIQUE` (`name` ASC) VISIBLE,
+  INDEX `fk_project_charity1_idx` (`charity_charity_id` ASC) VISIBLE,
+  INDEX `fk_project_team1_idx` (`team_team_id` ASC) VISIBLE,
+  CONSTRAINT `fk_project_charity1`
+    FOREIGN KEY (`charity_charity_id`)
+    REFERENCES `big_helper_db`.`charity` (`charity_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_project_team1`
     FOREIGN KEY (`team_team_id`)
     REFERENCES `big_helper_db`.`team` (`team_id`)
     ON DELETE CASCADE
@@ -64,9 +106,9 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `big_helper_db`.`project_has_volunteer` (
   `project_id` INT NOT NULL,
   `volunteer_id` INT NOT NULL,
-  PRIMARY KEY (`project_id`, `volunteer_id`),
   INDEX `fk_project_has_volunteer_volunteer1_idx` (`volunteer_id` ASC) VISIBLE,
   INDEX `fk_project_has_volunteer_project_idx` (`project_id` ASC) VISIBLE,
+  PRIMARY KEY (`project_id`, `volunteer_id`),
   CONSTRAINT `fk_project_has_volunteer_project`
     FOREIGN KEY (`project_id`)
     REFERENCES `big_helper_db`.`project` (`id`)
@@ -123,76 +165,22 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `big_helper_db`.`customer`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `big_helper_db`.`customer` (
-  `customer_id` INT NOT NULL,
-  PRIMARY KEY (`customer_id`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `big_helper_db`.`user`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `big_helper_db`.`user` (
-  `user_id` INT NOT NULL AUTO_INCREMENT,
-  `user_name` VARCHAR(45) NULL,
-  `user_email` VARCHAR(45) NULL,
-  `user_password` VARCHAR(45) NULL,
-  `volunteer_id` INT NOT NULL,
-  `volunteer_team_team_id` INT NOT NULL,
-  `customer_customer_id` INT NOT NULL,
-  PRIMARY KEY (`user_id`, `volunteer_id`, `volunteer_team_team_id`, `customer_customer_id`),
-  INDEX `fk_user_volunteer1_idx` (`volunteer_id` ASC, `volunteer_team_team_id` ASC) VISIBLE,
-  INDEX `fk_user_customer1_idx` (`customer_customer_id` ASC) VISIBLE,
-  CONSTRAINT `fk_user_volunteer1`
-    FOREIGN KEY (`volunteer_id` , `volunteer_team_team_id`)
-    REFERENCES `big_helper_db`.`volunteer` (`id` , `team_team_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_user_customer1`
-    FOREIGN KEY (`customer_customer_id`)
-    REFERENCES `big_helper_db`.`customer` (`customer_id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `big_helper_db`.`task`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `big_helper_db`.`task` (
   `task_id` INT NOT NULL,
   `project_id` INT NOT NULL,
-  `task_description` VARCHAR(45) NULL,
-  `task_isDone` TINYINT NULL DEFAULT 0,
-  `task_start` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
-  `test_complete` DATETIME NULL,
-  PRIMARY KEY (`task_id`, `project_id`),
+  `volunteer_id` INT NOT NULL,
+  `status` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`task_id`),
   INDEX `fk_task_project1_idx` (`project_id` ASC) VISIBLE,
+  INDEX `fk_task_volunteer1_idx` (`volunteer_id` ASC) VISIBLE,
   CONSTRAINT `fk_task_project1`
     FOREIGN KEY (`project_id`)
     REFERENCES `big_helper_db`.`project` (`id`)
     ON DELETE CASCADE
-    ON UPDATE CASCADE)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `big_helper_db`.`task_has_volunteer`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `big_helper_db`.`task_has_volunteer` (
-  `task_task_id` INT NOT NULL,
-  `volunteer_id` INT NOT NULL,
-  PRIMARY KEY (`task_task_id`, `volunteer_id`),
-  INDEX `fk_task_has_volunteer_volunteer1_idx` (`volunteer_id` ASC) VISIBLE,
-  INDEX `fk_task_has_volunteer_task1_idx` (`task_task_id` ASC) VISIBLE,
-  CONSTRAINT `fk_task_has_volunteer_task1`
-    FOREIGN KEY (`task_task_id`)
-    REFERENCES `big_helper_db`.`task` (`task_id`)
-    ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT `fk_task_has_volunteer_volunteer1`
+  CONSTRAINT `fk_task_volunteer1`
     FOREIGN KEY (`volunteer_id`)
     REFERENCES `big_helper_db`.`volunteer` (`id`)
     ON DELETE CASCADE
