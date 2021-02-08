@@ -8,40 +8,40 @@ INSERT INTO `big_helper_db`.`charity` (name, email)
 
 -- Team
 
-INSERT INTO `big_helper_db`.`team` (name, team_leader)
+INSERT INTO `big_helper_db`.`team` (name)
     VALUES
-    ('Red Team', 2),
-    ('Blue Team', 3);
+    ('Red Team'),
+    ('Blue Team');
 
 
 -- Volunteer
 
-INSERT INTO `big_helper_db`.`volunteer` (first_name, last_name, location_role, team_team_id, charity_charity_id) 
+INSERT INTO `big_helper_db`.`volunteer` (first_name, last_name, email, location_role, team_team_id) 
     VALUES 
-    ("Bill", "Holmes", "ADMIN", 1 , 1),
-    ("Tom", "Holmes", "SUPER", 1 , 1),
-    ("Sally", "Edwards", "SUPER", 1 , 2),
-    ("Rick", "Jones", "TEAM_MEMBER", 1 , 1),
-    ("Sarah", "Jones", "TEAM_MEMBER", 1 , 1),
-    ("Tim", "Johnson", "TEAM_MEMBER", 2 , 1),
-    ("Ricky", "Mack", "TEAM_MEMBER", 2 , 2),
-    ("Mary", "Mack", "TEAM_MEMBER", 2 , 2);
+    ("Bill", "Holmes", "bhVolunteer@example.com", "ADMIN", 1  ),
+    ("Tom", "Holmes", "thVolunteer@example.com","SUPER", 1  ),
+    ("Sally", "Edwards", "sehVolunteer@example.com","SUPER", 1 ),
+    ("Rick", "Jones", "rjVolunteer@example.com","TEAM_MEMBER", 1 ),
+    ("Sarah", "Jones", "sjVolunteer@example.com","TEAM_MEMBER", 1 ),
+    ("Tim", "Johnson", "tjVolunteer@example.com","TEAM_MEMBER", 2 ),
+    ("Ricky", "Mack", "rmVolunteer@example.com","TEAM_MEMBER", 2 ),
+    ("Mary", "Mack", "mmVolunteer@example.com","TEAM_MEMBER", 2 );
 
 
 INSERT INTO `big_helper_db`.`project` (name, date_started, date_target, date_completed, description, charity_charity_id, team_team_id)
     VALUES
-    ("Project 1", "1-1-2020", null, null, " description p1", 1, 1),
-    ("Project 2", "1-1-2020", null, null, " description p2", 1, 1);
+    ("Project 1", "2020-1-1", null, null, " description p1", 1, 1),
+    ("Project 2", "2020-1-1", null, null, " description p2", 1, 1);
 
 
-INSERT INTO `big_helper_db`.`task` (project_id, volunteer_id, status)
+INSERT INTO `big_helper_db`.`task` (project_id, volunteer_id, status, description)
     VALUES
-    (1,2, "ASSIGNED"),
-    (1,2, "ASSIGNED"),
-    (2,4, "ASSIGNED"),
-    (2,4, "ASSIGNED"),
-    (2,4, "ASSIGNED"),
-    (2,4, "ASSIGNED");
+    (1,2, "ASSIGNED", "description"),
+    (1,2, "ASSIGNED", "description"),
+    (2,4, "ASSIGNED", "description"),
+    (2,4, "ASSIGNED", "description"),
+    (2,4, "ASSIGNED", "description"),
+    (2,4, "ASSIGNED", "description");
 
 
 
