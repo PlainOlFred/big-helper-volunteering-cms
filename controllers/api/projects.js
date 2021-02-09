@@ -2,8 +2,35 @@ const router = require("express").Router();
 const connection = require("../../db/connection");
 
 router.get("/", function (req, res) {
+  
   connection.query(
-    `SELECT project.id, project.title FROM project`,
+  `SELECT 
+	  p.id, 
+    p.name, 
+    c.name charity_name,
+    c.email charity_email,
+    p.date_started dateStarted,
+    p.date_completed dateCompleted,
+    p.date_target dateTarget,
+    t.total_task,
+    t.assigned_task,
+    t.completed_task,
+    t.in_progress_task,
+    t.in_review_task
+    
+  FROM project p 
+  JOIN charity c ON c.charity_id = p.charity_charity_id
+  JOIN (
+	  SELECT 
+		  project_id,
+        count(*) total_task, 
+        count(if(status='ASSIGNED',1,null)) assigned_task,
+        count(if(status='COMPLETED',1,null)) completed_task,
+        count(if(status='IN PROGRESS', 1, null)) in_progress_task,
+        count(if(status='IN REVIEW', 1, null)) in_review_task
+      FROM task GROUP BY project_id) t on t.project_id = p.id
+  
+  ;`,
     function (err, results, fields) {
       console.log(results); // results contains rows returned by server
       res.json(results);

@@ -210,7 +210,7 @@ function Volunteer() {
                           <StatusPopover status={status} />
                         </Typography>
                         <Typography className={classes.projectDescription}>
-                          Blah Blah Blah Blah Blah
+                           Project Desc Project Desc
                         </Typography>
                       </React.Fragment>
                     }

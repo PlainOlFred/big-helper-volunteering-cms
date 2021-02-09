@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import { DataGrid, RowsProp, ColDef } from "@material-ui/data-grid";
@@ -17,6 +17,9 @@ import Select from "@material-ui/core/Select";
 import IconButton from "@material-ui/core/IconButton";
 import { Alarm, Person, AddBox, Close, Edit } from "@material-ui/icons";
 
+import { sizing } from '@material-ui/system';
+
+
 import TextField from "@material-ui/core/TextField";
 import Modal from "@material-ui/core/Modal";
 
@@ -31,6 +34,9 @@ import {
 
 // Components and Container
 import Project from "../Project";
+
+// Api
+import { projectsApi } from "../../API";
 
 import { projectSample } from "./utils";
 
@@ -100,6 +106,9 @@ const useStyles = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
     width: "40%",
   },
+  progress: {
+    width:'34%'
+  }
 }));
 
 function getModalStyle() {
@@ -166,7 +175,9 @@ function AddProjectModal() {
   const body = (
     <div style={modalStyle} className={classes.projectEditPaper}>
       <h2 id='create-project-modal-title'>Project {project.title}</h2>
-      <p id='create-project-description'>Add a new Project Task Title, Status, and Description</p>
+      <p id='create-project-description'>
+        Add a new Project Task Title, Status, and Description
+      </p>
       <div className={classes.projectEditForm} noValidate autoComplete='off'>
         <div>
           <TextField
@@ -206,29 +217,29 @@ function AddProjectModal() {
 
         <div>
           <TextField
-        id="date"
-        label="Start Date"
-        type="date"
-        defaultValue="2017-05-24"
-        className={classes.dateField}
-        InputLabelProps={{
-          shrink: true,
-        }}
-        name="startDate"
-        onChange={handleInputChange}
-      />
-      <TextField
-        id="date"
-        label="Due Date"
-        type="date"
-        defaultValue="2017-05-24"
-        className={classes.dateField}
-        InputLabelProps={{
-          shrink: true,
-        }}
-        name="dueDate"
-        onChange={handleInputChange}
-      />
+            id='date'
+            label='Start Date'
+            type='date'
+            defaultValue='2017-05-24'
+            className={classes.dateField}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            name='startDate'
+            onChange={handleInputChange}
+          />
+          <TextField
+            id='date'
+            label='Due Date'
+            type='date'
+            defaultValue='2017-05-24'
+            className={classes.dateField}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            name='dueDate'
+            onChange={handleInputChange}
+          />
         </div>
 
         <Button
@@ -264,43 +275,52 @@ function Projects() {
   const classes = useStyles();
   let { path, url } = useRouteMatch();
 
+  const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    console.log("fetching...");
+    projectsApi.getProjects().then((result) => {
+      setProjects(result.data);
+    });
+  },[]);
+
   const [value, setValue] = React.useState([20, 37]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  const rows: RowsProp = [...projectSample];
+  const rows: RowsProp = [...projects];
 
   const columns: ColDef[] = [
     {
-      field: "project",
+      field: "name",
       headerName: "Project Name",
       width: 150,
       renderCell: (params: ValueFormatterParams) => (
         <Link to={`${url}/${params.getValue("id")}`}>{params.value}</Link>
       ),
     },
-    { field: "charity", headerName: "Charity", width: 150 },
-    { field: "email", headerName: "Charity Email", width: 200 },
-    { field: "startDate", headerName: "Start Date", width: 150 },
+    { field: "charity_name", headerName: "Charity", width: 150 },
+    { field: "charity_email", headerName: "Charity Email", width: 200 },
+    { field: "dateStarted", headerName: "Start Date", width: 150 },
     {
-      field: "progress",
+      field: "total_task",
       headerName: "Progress",
       width: 200,
       renderCell: (params: ValueFormatterParams) => (
-        <Box
+        <Box 
           color='palevioletred'
           bgcolor='palevioletred'
-          width={`${params.value * 100}%`}
+          width={`${(params.getValue("completed_task") / params.getValue("total_task")) * 100}%`}
         >
-          {"."}
+          {params.getValue("completed_task") === 0 ?  "No Progress Made " : "."}
         </Box>
       ),
     },
-    { field: "dueDate", headerName: "Due Date", width: 150 },
+    { field: "dateTarget", headerName: "Due Date", width: 150 },
     {
-      field: "completeDate",
+      field: "dateCompleted",
       headerName: "Completion Date",
       width: 200,
     },
