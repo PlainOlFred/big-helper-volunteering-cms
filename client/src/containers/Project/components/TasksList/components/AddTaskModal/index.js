@@ -147,7 +147,6 @@ function AddTaskModal() {
             className={classes.textField}
             id='edit-task-title'
             label='Task Title'
-            defaultValue={curTask}
             variant='outlined'
             name='title'
             value={task.title}
@@ -163,7 +162,6 @@ function AddTaskModal() {
             className={classes.textField}
             id='edit-task-description'
             label='Task Title'
-            defaultValue={curDesc}
             variant='outlined'
             name='description'
             value={task.description}

@@ -126,7 +126,7 @@ function EditTaskModal() {
             className={classes.textField}
             id='edit-task-title'
             label='Task Title'
-            defaultValue={curTask}
+
             variant='outlined'
             name='title'
             value={task.title}
@@ -142,7 +142,6 @@ function EditTaskModal() {
             className={classes.textField}
             id='edit-task-description'
             label='Task Title'
-            defaultValue={curDesc}
             variant='outlined'
             name='description'
             value={task.description}
@@ -158,7 +157,6 @@ function EditTaskModal() {
             id='edit-task-status'
             label='Task Status'
             value={task.status}
-            defaultValue={statusSelect[0]}
             onChange={handleStatusChange}
             helperText='Update Status'
             variant='outlined'

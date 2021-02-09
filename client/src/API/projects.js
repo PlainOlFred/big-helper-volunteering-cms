@@ -11,8 +11,16 @@ const API = {
     });
   },
 
-  createNewProject: function () {
-    
+  createNewProject: function (body) {
+    console.log("create axios")
+    return axios.post("/api/projects", {
+      data: body,
+      headers: {
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json"
+      },
+    });  
   },
 };
 

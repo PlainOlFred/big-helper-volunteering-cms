@@ -19,8 +19,8 @@ router.get("/", function (req, res) {
     t.in_review_task
     
   FROM project p 
-  JOIN charity c ON c.charity_id = p.charity_charity_id
-  JOIN (
+  LEFT JOIN charity c ON c.charity_id = p.charity_charity_id
+  LEFT JOIN (
 	  SELECT 
 		  project_id,
         count(*) total_task, 
@@ -39,12 +39,28 @@ router.get("/", function (req, res) {
 });
 
 router.post("/", function (req, res) {
-  const project = req.body;
+  const {data: project} = req.body;
+  console.log("creating", project)
 
   connection.query(
-    "INSERT INTO project SET ?",
-    project,
+    `INSERT INTO project (
+      name, 
+      date_started, 
+      date_target, 
+      date_completed, 
+      description, 
+      charity_charity_id, 
+      team_team_id
+      ) VALUES (?,?,?,?,?,?,?);`,
+      [project.name,
+        '2020-2-2',
+        null,
+        null,
+        "default",
+        project.charity,
+        1],
     function (err, results, fields) {
+      if(err) throw err;
       res.json(results);
     }
   );

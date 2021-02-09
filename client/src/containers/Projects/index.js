@@ -17,8 +17,7 @@ import Select from "@material-ui/core/Select";
 import IconButton from "@material-ui/core/IconButton";
 import { Alarm, Person, AddBox, Close, Edit } from "@material-ui/icons";
 
-import { sizing } from '@material-ui/system';
-
+import { sizing } from "@material-ui/system";
 
 import TextField from "@material-ui/core/TextField";
 import Modal from "@material-ui/core/Modal";
@@ -34,11 +33,11 @@ import {
 
 // Components and Container
 import Project from "../Project";
+import AddProjectModal from "./components/AddProjectModal";
 
 // Api
-import { projectsApi } from "../../API";
+import { projectsApi, charityApi } from "../../API";
 
-import { projectSample } from "./utils";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -107,169 +106,9 @@ const useStyles = makeStyles((theme) => ({
     width: "40%",
   },
   progress: {
-    width:'34%'
-  }
+    width: "34%",
+  },
 }));
-
-function getModalStyle() {
-  const top = 50;
-  const left = 50;
-
-  return {
-    top: `${top}%`,
-    left: `${left}%`,
-    transform: `translate(-${top}%, -${left}%)`,
-    height: 500,
-  };
-}
-
-function AddProjectModal() {
-  const classes = useStyles();
-
-  const curTitle = "New Project";
-  const curCharity = "Helping Hands";
-
-  const [modalStyle] = React.useState(getModalStyle);
-
-  const [open, setOpen] = React.useState(false);
-
-  const charitySelect = [
-    { value: "helpHands", label: "Helping Hands" },
-    { value: "OneForOne", label: "One For One" },
-  ];
-
-  const [project, setProject] = React.useState({
-    title: curTitle,
-    charity: curCharity,
-    startDate: "1-1-1990",
-    dueDate: "1-1-1990",
-  });
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleCharityChange = (event) => {
-    setProject({
-      ...project,
-      charity: event.target.value,
-    });
-  };
-
-  const handleInputChange = (event) => {
-    setProject({
-      ...project,
-      [event.target.name]: event.target.value,
-    });
-  };
-
-  const handleProjectSubmit = () => {
-    console.log("submit", project);
-    setOpen(false);
-  };
-
-  const body = (
-    <div style={modalStyle} className={classes.projectEditPaper}>
-      <h2 id='create-project-modal-title'>Project {project.title}</h2>
-      <p id='create-project-description'>
-        Add a new Project Task Title, Status, and Description
-      </p>
-      <div className={classes.projectEditForm} noValidate autoComplete='off'>
-        <div>
-          <TextField
-            required
-            fullWidth
-            className={classes.textField}
-            id='create-project-title'
-            label='Project Title'
-            defaultValue={curTitle}
-            variant='outlined'
-            name='title'
-            value={project.title}
-            onChange={handleInputChange}
-          />
-        </div>
-
-        <div>
-          <TextField
-            select
-            fullWidth
-            className={classes.textField}
-            id='create-project-charity'
-            label='Charity'
-            value={project.charity}
-            defaultValue={charitySelect[0]}
-            onChange={handleCharityChange}
-            helperText='Update Status'
-            variant='outlined'
-          >
-            {charitySelect.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-        </div>
-
-        <div>
-          <TextField
-            id='date'
-            label='Start Date'
-            type='date'
-            defaultValue='2017-05-24'
-            className={classes.dateField}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            name='startDate'
-            onChange={handleInputChange}
-          />
-          <TextField
-            id='date'
-            label='Due Date'
-            type='date'
-            defaultValue='2017-05-24'
-            className={classes.dateField}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            name='dueDate'
-            onChange={handleInputChange}
-          />
-        </div>
-
-        <Button
-          variant='contained'
-          color='primary'
-          onClick={handleProjectSubmit}
-        >
-          Add Project
-        </Button>
-      </div>
-    </div>
-  );
-
-  return (
-    <div>
-      <IconButton edge='end' aria-label='edit' onClick={handleOpen}>
-        <AddBox fontSize='large' />
-      </IconButton>
-
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby='create-project-modal-title'
-        aria-describedby='create-project-description'
-      >
-        {body}
-      </Modal>
-    </div>
-  );
-}
 
 function Projects() {
   const classes = useStyles();
@@ -278,11 +117,13 @@ function Projects() {
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
-    console.log("fetching...");
     projectsApi.getProjects().then((result) => {
+      console.log("getPRo", result.data)
       setProjects(result.data);
     });
-  },[]);
+    
+
+  }, []);
 
   const [value, setValue] = React.useState([20, 37]);
 
@@ -298,7 +139,7 @@ function Projects() {
       headerName: "Project Name",
       width: 150,
       renderCell: (params: ValueFormatterParams) => (
-        <Link to={`${url}/${params.getValue("id")}`}>{params.value}</Link>
+        <Link to={`${url}/${params.row.id}`}>{params.value}</Link>
       ),
     },
     { field: "charity_name", headerName: "Charity", width: 150 },
@@ -309,12 +150,16 @@ function Projects() {
       headerName: "Progress",
       width: 200,
       renderCell: (params: ValueFormatterParams) => (
-        <Box 
+        <Box
           color='palevioletred'
           bgcolor='palevioletred'
-          width={`${(params.getValue("completed_task") / params.getValue("total_task")) * 100}%`}
+          width={`${
+            (params.getValue("completed_task") /
+              params.getValue("total_task")) *
+            100
+          }%`}
         >
-          {params.getValue("completed_task") === 0 ?  "No Progress Made " : "."}
+          {params.getValue("completed_task") === 0 ? "No Progress Made " : "."}
         </Box>
       ),
     },
