@@ -292,8 +292,8 @@ function Project() {
         <Grid item xs={12} md={4} lg={3}>
           <Paper className={classes.topPaper}>
             <h1>Tasks Status</h1>
-            <Doughnut
-              data={() => taskData(10, 20, 10)}
+            {project && <Doughnut
+              data={() => taskData(project.tasksStatus.ASSIGNED, project.tasksStatus["IN PROGRESS"], project.tasksStatus["COMPLETED"])}
               height={50}
               width={50}
               options={{
@@ -301,7 +301,7 @@ function Project() {
                 rotation: -0.75 * Math.PI,
                 circumference: 2 * Math.PI,
               }}
-            />
+            />}
           </Paper>
         </Grid>
 

@@ -112,7 +112,7 @@ function AddTaskModal() {
   const [task, setTask] = React.useState({
     title: curTask,
     description: curDesc,
-    status: "assigned",
+    status: "ASSIGNED",
   });
 
   const handleOpen = () => {

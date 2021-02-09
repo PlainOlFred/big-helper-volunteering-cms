@@ -69,8 +69,8 @@ function TasksList(props) {
 
   return (
        <Paper className={classes.root}>
-            <h1>Projects Name - Team leader</h1>
-            <h4>Taks</h4>
+            <h1>Projects Name </h1>
+            <h4>Tasks</h4>
 
             <Box className={classes.filterSection}>
               {/* Role Button Filter */}

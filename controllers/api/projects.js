@@ -79,9 +79,14 @@ router.get("/:id", async function (req, res) {
 
     constresponse = {};
 
+    const [projectRow, projectField] = await connection.promise().query(
+      `SELECT 
+        name 
+      FROM project
+      WHERE id = ?
+      `, [id]
+    );
 
-    const 
-    
     const [taskRows, taskFields] = await connection.promise().query(
       ` SELECT 
         task_id,
@@ -95,6 +100,21 @@ router.get("/:id", async function (req, res) {
     );
 
     response["tasks"] = taskRows;
+    // format tasks
+
+      const taskStatus = taskRows.reduce((acc, cur) => {
+          acc[cur.status] = acc[cur.status] +1;
+          return acc
+      }, {
+        "ASSIGNED": 0,
+        "COMPLETED": 0,
+        "IN PROGRESS": 0,
+        "IN REVIEW": 0
+      })
+  ;
+
+    response["project_name"] = projectRow[0].name;
+    response["tasksStatus"] = taskStatus;
 
     console.log(response);
 
