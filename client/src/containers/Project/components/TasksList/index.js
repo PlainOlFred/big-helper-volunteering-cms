@@ -57,9 +57,10 @@ const useStyles = makeStyles((theme) => ({
 
 function TasksList(props) {
   const classes = useStyles();
+  const {tasks} = props;
 
    function generate(element) {
-    return [0, 1, 2, 4, 5, 6].map((value) =>
+    return tasks.map((value) =>
       React.cloneElement(element, {
         key: value,
       })
@@ -90,21 +91,21 @@ function TasksList(props) {
                   <AddTaskModal />
                 </ListItemIcon>
               </ListItem>
-              {generate(
+              {tasks.map((task) =>
                 <ListItem >
                   <ListItemText
                     primary={
                       <React.Fragment>
                         <Typography display='inline'>
-                          Single-line item
+                          {task.title}
                         </Typography>
 
                         <Typography className={classes.projectDescription}>
-                          <StatusPopover />
+                          <StatusPopover status={task.status}/>
                         </Typography>
 
                         <Typography className={classes.projectDescription}>
-                          Project Desc Project Desc
+                          {task.description}
                         </Typography>
                       </React.Fragment>
                     }

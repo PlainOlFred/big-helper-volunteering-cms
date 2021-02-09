@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -32,8 +32,17 @@ import Link from "@material-ui/core/Link";
 
 import { Doughnut, Bar } from "react-chartjs-2";
 
+import {
+  useParams
+} from "react-router-dom";
+
+
+
 // Components
 import TasksList from './components/TasksList'
+
+// Api
+import { projectsApi } from "../../API";
 
 
 
@@ -215,6 +224,29 @@ function AssignVolunteerModal() {
 function Project() {
   const classes = useStyles();
 
+  const [project, setProject] = useState(null)
+ 
+
+
+  const {projectId} = useParams();
+  useEffect(() => {
+  
+      projectsApi.getProjectById(projectId).then((result) => {
+
+        console.log(result.data.tasks)
+        setProject(result.data)
+      })
+
+  },[])
+
+  function generateTasks(element) {
+    return project.tasks.map((value) =>
+      React.cloneElement(element, {
+        key: value,
+      })
+    );
+  }
+
   
 
   function generate(element) {
@@ -253,7 +285,7 @@ function Project() {
       <Grid container spacing={3}>
         {/* Project Details */}
         <Grid item xs={12} md={8} lg={9}>
-          <TasksList /> 
+          {project && <TasksList tasks={project.tasks}/> }
         </Grid>
 
         {/* Overall Tasks */}
@@ -278,7 +310,7 @@ function Project() {
           <Paper className={classes.bottomPaper}>
             <h1>Alerts</h1>
             <List className={classes.list}>
-              {generate(
+              {project && generateTasks(
                 <ListItem>
                   <ListItemIcon>
                     <Alarm />

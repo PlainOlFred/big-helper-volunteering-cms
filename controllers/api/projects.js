@@ -1,10 +1,10 @@
 const router = require("express").Router();
+const { response } = require("express");
 const connection = require("../../db/connection");
 
 router.get("/", function (req, res) {
-  
   connection.query(
-  `SELECT 
+    `SELECT 
 	  p.id, 
     p.name, 
     c.name charity_name,
@@ -39,8 +39,8 @@ router.get("/", function (req, res) {
 });
 
 router.post("/", function (req, res) {
-  const {data: project} = req.body;
-  console.log("creating", project)
+  const { data: project } = req.body;
+  console.log("creating", project);
 
   connection.query(
     `INSERT INTO project (
@@ -52,15 +52,9 @@ router.post("/", function (req, res) {
       charity_charity_id, 
       team_team_id
       ) VALUES (?,?,?,?,?,?,?);`,
-      [project.name,
-        '2020-2-2',
-        null,
-        null,
-        "default",
-        project.charity,
-        1],
+    [project.name, "2020-2-2", null, null, "default", project.charity, 1],
     function (err, results, fields) {
-      if(err) throw err;
+      if (err) throw err;
       res.json(results);
     }
   );
@@ -68,7 +62,7 @@ router.post("/", function (req, res) {
 
 router.delete("/", function (req, res) {
   const id = req.body.id;
-  
+
   connection.query(
     `DELETE FROM project WHERE id = ?`,
     id,
@@ -78,25 +72,51 @@ router.delete("/", function (req, res) {
   );
 });
 
-router.put("/update-project-title", function(req, res) {
-    const {project_id, title} = req.body
-    connection.query(
-      "UPDATE project SET title = ? WHERE id = ?",
-      [title, project_id], function(err, results, fields) {
+router.get("/:id", async function (req, res) {
+  try {
+    console.log("route");
+    const id = req.params.id;
 
-          res.json(results)
-      }
+    constresponse = {};
+
+
+    const 
+    
+    const [taskRows, taskFields] = await connection.promise().query(
+      ` SELECT 
+        task_id,
+        title,
+        description,
+        status,
+        volunteer_id
+      FROM task WHERE project_id = ?
+    `,
+      [id]
     );
+
+    response["tasks"] = taskRows;
+
+    console.log(response);
+
+    res.json(response);
+  } catch (error) {
+    console.warm(error);
+  }
 });
 
-
-
-router.put("/add-team-lead", function(req, res) {
-
+router.put("/update-project-title", function (req, res) {
+  const { project_id, title } = req.body;
+  connection.query(
+    "UPDATE project SET title = ? WHERE id = ?",
+    [title, project_id],
+    function (err, results, fields) {
+      res.json(results);
+    }
+  );
 });
 
-router.put("/remove-team-lead", function(req, res) {
+router.put("/add-team-lead", function (req, res) {});
 
-});
+router.put("/remove-team-lead", function (req, res) {});
 
 module.exports = router;

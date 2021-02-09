@@ -249,8 +249,7 @@ function Projects() {
             </Grid>
           </Container>
         </Route>
-        <Route path={`${path}/:projectId`}>
-          <Project />
+        <Route path={`${path}/:projectId`} children={<Project />}>
         </Route>
       </Switch>
     </main>
