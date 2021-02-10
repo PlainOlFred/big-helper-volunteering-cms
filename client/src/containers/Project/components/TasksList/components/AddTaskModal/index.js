@@ -93,6 +93,10 @@ const useStyles = makeStyles((theme) => ({
 function AddTaskModal() {
   const classes = useStyles();
 
+  const [projects, projectDispatch] = useProject();
+  const {currentProject: project} = projects;
+
+
   function getModalStyle() {
   const top = 50;
   const left = 50;
@@ -135,7 +139,7 @@ function AddTaskModal() {
 
   const handleTaskSubmit = async () => {
     try {
-      const {data} = await projectsApi.addTasksToProject(task);
+      const {data} = await projectsApi.addTasksToProject({task, ...project});
 
       setOpen(false);
       

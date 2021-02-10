@@ -60,8 +60,6 @@ router.post("/", function (req, res) {
     [id, project.name, project.startDate, project.dueDate, null, "default", project.charity, project.team],
     function (err, results, fields) {
       if (err) throw err;
-
-      console.log("created", results)
       res.json({id, ...project});
     }
   );
@@ -79,6 +77,8 @@ router.delete("/", function (req, res) {
   );
 });
 
+
+
 router.get("/:id", async function (req, res) {
   try {
     
@@ -88,6 +88,7 @@ router.get("/:id", async function (req, res) {
 
     const [projectRow, projectField] = await connection.promise().query(
       `SELECT 
+        id,
         name 
       FROM project
       WHERE id = ?
@@ -109,7 +110,7 @@ router.get("/:id", async function (req, res) {
     response["tasks"] = taskRows;
     // format tasks
 
-      const taskStatus = taskRows.reduce((acc, cur) => {
+      const taskStatus = taskRows.reduce((acc, cur) => { 
           acc[cur.status] = acc[cur.status] +1;
           return acc
       }, {
@@ -121,6 +122,7 @@ router.get("/:id", async function (req, res) {
   ;
 
     response["project_name"] = projectRow[0].name;
+    response["project_id"] = projectRow[0].id;
     response["tasksStatus"] = taskStatus;
 
 
@@ -131,10 +133,29 @@ router.get("/:id", async function (req, res) {
 });
 
 router.post("/add-task", function(req, res) {
-  console.log("task body")
+  const { data } = req.body;
+  const id = uuid();
 
-  res.json({succes: true})
-})
+  connection.query(
+    `INSERT INTO task (
+      task_id,
+      project_id,
+      volunteer_id,
+      status,
+      title,
+      description
+    ) VALUES (?,?,?,?,?,?);`,
+    [
+      id,
+      data.project_id, 
+      "55d7868d-1e1d-42f6-b550-8661f1a3ab66", // ! Harrd Coded until User is implememted
+      data.task.status, data.task.title, data.task.description],
+      function (err, results, fields) {
+      if (err) throw err;
+      res.json({task_id: id});
+    }
+  )
+});
 
 router.put("/update-project-title", function (req, res) {
   const { project_id, title } = req.body;
