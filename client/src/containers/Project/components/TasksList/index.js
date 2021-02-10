@@ -92,7 +92,7 @@ function TasksList(props) {
                 </ListItemIcon>
               </ListItem>
               { tasks &&tasks.map((task) =>
-                <ListItem >
+                <ListItem key={task.task_id}>
                   <ListItemText
                     primary={
                       <React.Fragment>
@@ -111,7 +111,7 @@ function TasksList(props) {
                     }
                   />
                   <ListItemSecondaryAction>
-                    <EditTaskModal />
+                    <EditTaskModal task={task}/>
                   </ListItemSecondaryAction>
                 </ListItem>
               )}

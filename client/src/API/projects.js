@@ -41,6 +41,17 @@ const API = {
         "Content-Type": "application/json"
       }
     })
+  }, 
+
+  editTasksOnProject: function(body) {
+    return axios.patch(`/api/projects/update-task`, {
+      data: body,
+      headers: {
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json"
+      }
+    })
   }
 }
 

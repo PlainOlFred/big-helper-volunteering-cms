@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 import IconButton from "@material-ui/core/IconButton";
@@ -10,7 +10,8 @@ import Button from "@material-ui/core/Button";
 import Modal from "@material-ui/core/Modal";
 import MenuItem from "@material-ui/core/MenuItem";
 
-
+import { charityApi, projectsApi } from "../../../../../../API";
+import { useProject, useOptions } from "../../../../../../App";
 
 
 
@@ -51,8 +52,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-function EditTaskModal() {
+function EditTaskModal(props) {
   const classes = useStyles();
+  const {task: taskIntial} = props;
+
+  useEffect(() => {
+    console.log(props.task)
+  })
 
   function getModalStyle() {
   const top = 50;
@@ -65,16 +71,17 @@ function EditTaskModal() {
     height: 500,
   };
 }
-
-  const curTask = "Clean gutters";
-  const curDesc = "climb up and clean gutter";
-  const curStatus = "review";
+  const task_id =taskIntial.task_id
+  const curTask = taskIntial.title;
+  const curDesc = taskIntial.description;
+  const curStatus = taskIntial.status;
 
   const [modalStyle] = React.useState(getModalStyle);
 
   const [open, setOpen] = React.useState(false);
 
   const [task, setTask] = React.useState({
+    id: task_id,
     title: curTask,
     description: curDesc,
     status: curStatus,
@@ -102,16 +109,24 @@ function EditTaskModal() {
     });
   };
 
-  const handleTaskSubmit = () => {
-    console.log("submit", task);
-    setOpen(false);
+  const handleTaskSubmit = async () => {
+    try {
+      console.log("SUM Tak", task)
+      const {data} = await projectsApi.editTasksOnProject({...task });
+
+      setOpen(false);
+      
+    } catch (error) {
+      console.warn('error in editing task', error)
+    }
+    
   };
 
   const statusSelect = [
-    { value: "review", label: "Submit Review" },
-    { value: "assigned", label: "Assign" },
-    { value: "inProgress", label: "In Progress" },
-    { value: "completed", label: "Completed" },
+    { value: "REVIEW", label: "Submit For Review" },
+    { value: "ASSIGNED", label: "Assigned" },
+    { value: "IN_PROGRESS", label: "In Progress" },
+    { value: "COMPLETED", label: "Completed" },
   ];
 
   const body = (

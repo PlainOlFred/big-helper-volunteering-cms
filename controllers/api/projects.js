@@ -1,6 +1,6 @@
 const router = require("express").Router();
 // const { response } = require("express");
-const { v4: uuid } = require('uuid');
+const { v4: uuid } = require("uuid");
 const connection = require("../../db/connection");
 
 router.get("/", function (req, res) {
@@ -45,7 +45,6 @@ router.post("/", function (req, res) {
   const { data: project } = req.body;
   const id = uuid();
 
-
   connection.query(
     `INSERT INTO project (
       id,
@@ -57,10 +56,19 @@ router.post("/", function (req, res) {
       charity_charity_id, 
       team_team_id
       ) VALUES (?,?,?,?,?,?,?,?);`,
-    [id, project.name, project.startDate, project.dueDate, null, "default", project.charity, project.team],
+    [
+      id,
+      project.name,
+      project.startDate,
+      project.dueDate,
+      null,
+      "default",
+      project.charity,
+      project.team,
+    ],
     function (err, results, fields) {
       if (err) throw err;
-      res.json({id, ...project});
+      res.json({ id, ...project });
     }
   );
 });
@@ -77,11 +85,8 @@ router.delete("/", function (req, res) {
   );
 });
 
-
-
 router.get("/:id", async function (req, res) {
   try {
-    
     const id = req.params.id;
 
     const response = {};
@@ -92,7 +97,8 @@ router.get("/:id", async function (req, res) {
         name 
       FROM project
       WHERE id = ?
-      `, [id]
+      `,
+      [id]
     );
 
     const [taskRows, taskFields] = await connection.promise().query(
@@ -110,21 +116,21 @@ router.get("/:id", async function (req, res) {
     response["tasks"] = taskRows;
     // format tasks
 
-      const taskStatus = taskRows.reduce((acc, cur) => { 
-          acc[cur.status] = acc[cur.status] +1;
-          return acc
-      }, {
-        "ASSIGNED": 0,
-        "COMPLETED": 0,
+    const taskStatus = taskRows.reduce(
+      (acc, cur) => {
+        acc[cur.status] = acc[cur.status] + 1;
+        return acc;
+      },
+      {
+        ASSIGNED: 0,
+        COMPLETED: 0,
         "IN PROGRESS": 0,
-        "IN REVIEW": 0
-      })
-  ;
-
+        "IN REVIEW": 0,
+      }
+    );
     response["project_name"] = projectRow[0].name;
     response["project_id"] = projectRow[0].id;
     response["tasksStatus"] = taskStatus;
-
 
     res.json(response);
   } catch (error) {
@@ -132,7 +138,7 @@ router.get("/:id", async function (req, res) {
   }
 });
 
-router.post("/add-task", function(req, res) {
+router.post("/add-task", function (req, res) {
   const { data } = req.body;
   const id = uuid();
 
@@ -147,14 +153,43 @@ router.post("/add-task", function(req, res) {
     ) VALUES (?,?,?,?,?,?);`,
     [
       id,
-      data.project_id, 
+      data.project_id,
       "55d7868d-1e1d-42f6-b550-8661f1a3ab66", // ! Harrd Coded until User is implememted
-      data.task.status, data.task.title, data.task.description],
-      function (err, results, fields) {
+      data.task.status,
+      data.task.title,
+      data.task.description,
+    ],
+    function (err, results, fields) {
       if (err) throw err;
-      res.json({task_id: id});
+      res.json({ task_id: id });
     }
-  )
+  );
+});
+
+router.patch("/update-task", function (req, res) {
+  const { data: task } = req.body;
+
+
+  console.log("TASK",task)
+
+  connection.query(
+    `UPDATE task SET title = ?, description = ?, status  
+    WHERE task_id = ?`, [task.title, task.description, task.status, task.id],
+    // [
+    //   {
+    //     title: task.title,
+    //     description: task.description,
+    //     status: task.status,
+    //   },
+    //   {
+    //     task_id: data.id,
+    //   },
+    // ],
+    function (err, results, fields) {
+      if (err) throw err;
+      res.json({ id });
+    }
+  );
 });
 
 router.put("/update-project-title", function (req, res) {
@@ -167,7 +202,6 @@ router.put("/update-project-title", function (req, res) {
     }
   );
 });
-
 
 router.put("/add-team-lead", function (req, res) {});
 
