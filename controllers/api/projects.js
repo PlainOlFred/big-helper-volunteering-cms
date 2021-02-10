@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { response } = require("express");
+// const { response } = require("express");
 const { v4: uuid } = require('uuid');
 const connection = require("../../db/connection");
 
@@ -44,7 +44,7 @@ router.get("/", function (req, res) {
 router.post("/", function (req, res) {
   const { data: project } = req.body;
   const id = uuid();
-  console.log("creating", project, id, typeof id);
+
 
   connection.query(
     `INSERT INTO project (
@@ -81,10 +81,10 @@ router.delete("/", function (req, res) {
 
 router.get("/:id", async function (req, res) {
   try {
-    console.log("route");
+    
     const id = req.params.id;
 
-    constresponse = {};
+    const response = {};
 
     const [projectRow, projectField] = await connection.promise().query(
       `SELECT 
@@ -123,13 +123,18 @@ router.get("/:id", async function (req, res) {
     response["project_name"] = projectRow[0].name;
     response["tasksStatus"] = taskStatus;
 
-    console.log(response);
 
     res.json(response);
   } catch (error) {
-    console.warm(error);
+    console.warn(error);
   }
 });
+
+router.post("/add-task", function(req, res) {
+  console.log("task body")
+
+  res.json({succes: true})
+})
 
 router.put("/update-project-title", function (req, res) {
   const { project_id, title } = req.body;
@@ -141,6 +146,7 @@ router.put("/update-project-title", function (req, res) {
     }
   );
 });
+
 
 router.put("/add-team-lead", function (req, res) {});
 

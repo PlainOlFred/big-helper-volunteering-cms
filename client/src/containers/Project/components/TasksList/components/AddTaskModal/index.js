@@ -16,6 +16,9 @@ import Modal from "@material-ui/core/Modal";
 
 import {AddBox} from "@material-ui/icons";
 
+// Api
+import { charityApi, projectsApi } from "../../../../../../API";
+import { useProject, useOptions } from "../../../../../../App";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -130,9 +133,16 @@ function AddTaskModal() {
     });
   };
 
-  const handleTaskSubmit = () => {
-    console.log("submit", task);
-    setOpen(false);
+  const handleTaskSubmit = async () => {
+    try {
+      const {data} = await projectsApi.addTasksToProject(task);
+
+      setOpen(false);
+      
+    } catch (error) {
+      console.warn('error in adding task', error)
+    }
+    
   };
 
   const body = (

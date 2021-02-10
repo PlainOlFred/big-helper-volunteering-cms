@@ -30,6 +30,18 @@ const API = {
         "Content-Type": "application/json"
       }
     })
+  },
+
+  addTasksToProject: function(body) {
+    console.log("before axios task")
+    return axios.get(`/api/projects/add-task`, {
+      // data: body,
+      headers: {
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json"
+      }
+    })
   }
 }
 

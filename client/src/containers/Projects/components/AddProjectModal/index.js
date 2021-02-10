@@ -104,7 +104,6 @@ function AddProjectModal() {
   const handleProjectSubmit = async () => {
     try {
       
-    console.log("submit", project);
     const {data} = await projectsApi.createNewProject(project);
 
     const payload = {
@@ -118,7 +117,7 @@ function AddProjectModal() {
       team_team_id: project.team
 
     }
-    console.log("New Project", payload)
+    
 
     projectDispatch({type:"ADD_PROJECT", payload})
 

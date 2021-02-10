@@ -31,6 +31,12 @@ function projectReducer(state, action) {
         ...state,
         projects: [...action.projects],
       };
+      case "SET_CURRENT_PROJECT":
+        console.log("reducer hit", action)
+      return {
+        ...state,
+        currentProject: {...action.project},
+      };
     case "ADD_PROJECT":
       return {
         ...state,
@@ -56,7 +62,7 @@ export function useProject() {
 function ProjectProvider(props) {
   const [state, dispatch] = useReducer(projectReducer, {
     projects: props.projects || [],
-    currentProject: {},
+    currentProject: null,
   });
 
   const value = useMemo(() => [state, dispatch], [state]);

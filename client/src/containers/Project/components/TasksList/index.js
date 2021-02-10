@@ -69,8 +69,8 @@ function TasksList(props) {
 
   return (
        <Paper className={classes.root}>
-            <h1>Projects Name </h1>
-            <h4>Tasks</h4>
+          
+            <h2>Tasks</h2>
 
             <Box className={classes.filterSection}>
               {/* Role Button Filter */}
@@ -91,7 +91,7 @@ function TasksList(props) {
                   <AddTaskModal />
                 </ListItemIcon>
               </ListItem>
-              {tasks.map((task) =>
+              { tasks &&tasks.map((task) =>
                 <ListItem >
                   <ListItemText
                     primary={

@@ -10,27 +10,18 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
-import Avatar from "@material-ui/core/Avatar";
 import IconButton from "@material-ui/core/IconButton";
-import FormGroup from "@material-ui/core/FormGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import Typography from "@material-ui/core/Typography";
-import FolderIcon from "@material-ui/icons/Folder";
-import DeleteIcon from "@material-ui/icons/Delete";
-import { Alarm, Person, AddBox, Close, Edit } from "@material-ui/icons";
-import Popover from "@material-ui/core/Popover";
-import TextField from "@material-ui/core/TextField";
-import Box from "@material-ui/core/Box";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
+import { Alarm, Person, AddBox, Close} from "@material-ui/icons";
+
 
 import Button from "@material-ui/core/Button";
 
 import Modal from "@material-ui/core/Modal";
-import MenuItem from "@material-ui/core/MenuItem";
 import Link from "@material-ui/core/Link";
 
-import { Doughnut, Bar } from "react-chartjs-2";
+import { Doughnut } from "react-chartjs-2";
 
 import {
   useParams
@@ -43,6 +34,8 @@ import TasksList from './components/TasksList'
 
 // Api
 import { projectsApi } from "../../API";
+
+import { useProject } from "../../App";
 
 
 
@@ -112,9 +105,13 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
   },
+  projectTitle: {
+    marginBottom: "0px",
+    fontsize: "60px"
+  }
 }));
 
-// Status Popover
+
 
 
 // Task Edit Modal
@@ -223,20 +220,28 @@ function AssignVolunteerModal() {
 
 function Project() {
   const classes = useStyles();
+  const [projects, projectDispatch] = useProject();
 
-  const [project, setProject] = useState(null)
+  const {currentProject: project} = projects;
+
+
  
 
-
   const {projectId} = useParams();
+
   useEffect(() => {
-  
-      projectsApi.getProjectById(projectId).then((result) => {
+    async function fetchProjectDetail() {
+      try {
+       const {data: project} = await projectsApi.getProjectById(projectId)
+        projectDispatch({type: "SET_CURRENT_PROJECT", project});
+        console.log("project", project)
+      
+      } catch (error) {
+        console.warn("Error while fetchProjectDetail", error)
+      }
+    }
 
-        console.log(result.data.tasks)
-        setProject(result.data)
-      })
-
+    fetchProjectDetail();
   },[])
 
   function generateTasks(element) {
@@ -247,7 +252,6 @@ function Project() {
     );
   }
 
-  
 
   function generate(element) {
     return [0, 1, 2, 4, 5, 6].map((value) =>
@@ -282,18 +286,25 @@ function Project() {
 
   return (
     <Container maxWidth='lg' className={classes.container}>
-      <Grid container spacing={3}>
+      {projects.currentProject && <Grid container spacing={3}>
+        
+        {/* Project Details */}
+        <Grid item xs={12} md={8} lg={9}>
+         {project && <h1 className={classes.projectTitle}>{project.project_name}</h1>}
+        </Grid>
+
         {/* Project Details */}
         <Grid item xs={12} md={8} lg={9}>
           {project && <TasksList tasks={project.tasks}/> }
         </Grid>
 
+
         {/* Overall Tasks */}
         <Grid item xs={12} md={4} lg={3}>
           <Paper className={classes.topPaper}>
-            <h1>Tasks Status</h1>
-            {project && <Doughnut
-              data={() => taskData(project.tasksStatus.ASSIGNED, project.tasksStatus["IN PROGRESS"], project.tasksStatus["COMPLETED"])}
+            <h2>Tasks Status</h2>
+            {project.tasksStatus !== null && <Doughnut
+              data={() => taskData(project.tasksStatus.ASSIGNED , project.tasksStatus["IN PROGRESS"], project.tasksStatus["COMPLETED"])}
               height={50}
               width={50}
               options={{
@@ -308,9 +319,9 @@ function Project() {
         {/* Alerts  */}
         <Grid item xs={12} md={6}>
           <Paper className={classes.bottomPaper}>
-            <h1>Alerts</h1>
+            <h2>Alerts</h2>
             <List className={classes.list}>
-              {project && generateTasks(
+              {projects.currentProject && generateTasks(
                 <ListItem>
                   <ListItemIcon>
                     <Alarm />
@@ -343,8 +354,8 @@ function Project() {
         {/* Volunteer list */}
         <Grid item xs={12} md={6}>
           <Paper className={classes.bottomPaper}>
-            <h1>Volunteers</h1>
-            <List className={classes.list}>
+            <h2>Volunteers</h2>
+            {project.tasks && <List className={classes.list}>
               <ListItem>
                 <ListItemIcon>
                   <AssignVolunteerModal />
@@ -369,10 +380,10 @@ function Project() {
                   </ListItemSecondaryAction>
                 </ListItem>
               )}
-            </List>
+            </List>}
           </Paper>
         </Grid>
-      </Grid>
+      </Grid>}
     </Container>
   );
 }
