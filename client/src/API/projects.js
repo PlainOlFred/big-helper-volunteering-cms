@@ -11,7 +11,7 @@ const API = {
     });
   },
 
-  createNewProject: function (body) {
+  createNewProject: function (body) {    
     return axios.post("/api/projects", {
       data: body,
       headers: {
@@ -23,7 +23,6 @@ const API = {
   },
 
   getProjectById: function(id) {
-    console.log("before axios", id)
     return axios.get(`/api/projects/${id}`, {
       headers: {
         Accept: "application/json",

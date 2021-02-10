@@ -1,37 +1,40 @@
 const router = require("express").Router();
 const { response } = require("express");
+const { v4: uuid } = require('uuid');
 const connection = require("../../db/connection");
 
 router.get("/", function (req, res) {
   connection.query(
     `SELECT 
-	  p.id, 
-    p.name, 
-    c.name charity_name,
-    c.email charity_email,
-    p.date_started dateStarted,
-    p.date_completed dateCompleted,
-    p.date_target dateTarget,
-    t.total_task,
-    t.assigned_task,
-    t.completed_task,
-    t.in_progress_task,
-    t.in_review_task
+        p.id, 
+        p.name, 
+        c.name charity_name,
+        c.email charity_email,
+        p.date_started dateStarted,
+        p.date_completed dateCompleted,
+        p.date_target dateTarget,
+        t.total_task,
+        t.assigned_task,
+        t.completed_task,
+        t.in_progress_task,
+        t.in_review_task,
+        team.name team
     
   FROM project p 
   LEFT JOIN charity c ON c.charity_id = p.charity_charity_id
   LEFT JOIN (
 	  SELECT 
-		  project_id,
+		    project_id,
         count(*) total_task, 
-        count(if(status='ASSIGNED',1,null)) assigned_task,
-        count(if(status='COMPLETED',1,null)) completed_task,
-        count(if(status='IN PROGRESS', 1, null)) in_progress_task,
-        count(if(status='IN REVIEW', 1, null)) in_review_task
+        sum(if(status='ASSIGNED',1,0)) assigned_task,
+        sum(if(status='COMPLETED',1,0)) completed_task,
+        sum(if(status='IN PROGRESS', 1, 0)) in_progress_task,
+        sum(if(status='IN REVIEW', 1, 0)) in_review_task
       FROM task GROUP BY project_id) t on t.project_id = p.id
-  
+  LEFT JOIN team ON team.team_id = p.team_team_id
   ;`,
     function (err, results, fields) {
+      if (err) throw err;
       console.log(results); // results contains rows returned by server
       res.json(results);
     }
@@ -40,10 +43,12 @@ router.get("/", function (req, res) {
 
 router.post("/", function (req, res) {
   const { data: project } = req.body;
-  console.log("creating", project);
+  const id = uuid();
+  console.log("creating", project, id, typeof id);
 
   connection.query(
     `INSERT INTO project (
+      id,
       name, 
       date_started, 
       date_target, 
@@ -51,11 +56,13 @@ router.post("/", function (req, res) {
       description, 
       charity_charity_id, 
       team_team_id
-      ) VALUES (?,?,?,?,?,?,?);`,
-    [project.name, "2020-2-2", null, null, "default", project.charity, 1],
+      ) VALUES (?,?,?,?,?,?,?,?);`,
+    [id, project.name, project.startDate, project.dueDate, null, "default", project.charity, project.team],
     function (err, results, fields) {
       if (err) throw err;
-      res.json(results);
+
+      console.log("created", results)
+      res.json({id, ...project});
     }
   );
 });

@@ -1,8 +1,10 @@
 import axios from "axios";
+// import { useProject } from "../App ";
+
 
 const API = {
-  getCharities: function () {
-    return axios.get("/api/charity", {
+    getTeams: function () {
+    return axios.get("/api/teams", {
       headers: {
         Accept: "application/json",
         "Access-Control-Allow-Origin": "*",
@@ -10,20 +12,20 @@ const API = {
       },
     });
   },
-  getCharityOptions: function () {
-    return axios.get("/api/charity", {
+  getTeamsOptions: function () {
+    return axios.get("/api/teams", {
       headers: {
         Accept: "application/json",
         "Access-Control-Allow-Origin": "*",
         "Content-Type": "application/json"
       },
       params: {
-        simplified: true
+        simplified: 1
       }
     });
   },
 
+}
 
-};
 
-export default API;
+export default API

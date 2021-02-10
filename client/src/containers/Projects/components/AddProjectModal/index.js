@@ -12,6 +12,9 @@ import IconButton from "@material-ui/core/IconButton";
 
 // Api
 import { charityApi, projectsApi } from "../../../../API";
+import { useProject, useOptions } from "../../../../App";
+
+
 
 
 
@@ -21,10 +24,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     overflow: "auto",
     flexDirection: "column",
-  },
-  title: {
-    display: "flex",
-    justifyContent: "space-between",
   },
   projectEditPaper: {
     position: "absolute",
@@ -39,7 +38,6 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     flexWrap: "warp",
   },
-
   textField: {
     marginBottom: theme.spacing(5),
     marginLeft: theme.spacing(1),
@@ -69,61 +67,72 @@ function getModalStyle() {
 function AddProjectModal() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-  const [project, setProject] = React.useState({
-    name: "",
-    charity: "",
-    startDate: "1-1-1990",
-    dueDate: "1-1-1990",
-  });
-  const [charityOptions, setCharityOptions] = React.useState([]);
 
-  useEffect(() => {
-    charityApi.getCharities().then((result) => {
-      setCharityOptions(result.data)
-    });
-  }, [])
+  const [projects, projectDispatch] = useProject();
+  const [options] = useOptions();
 
-  
+
+  const [project, setProject] = React.useState({});
+ 
 
   const [modalStyle] = React.useState(getModalStyle);
 
-
-
   const handleOpen = () => {
+    setProject({
+      name: "",
+      team: "",
+      charity: "",
+      startDate: "",
+      dueDate: ""
+    });
     setOpen(true);
   };
 
   const handleClose = () => {
     setOpen(false);
-  };
 
-  const handleCharityChange = (event) => {
-    setProject({
-      ...project,
-      charity: event.target.value,
-    });
   };
 
   const handleInputChange = (event) => {
+    
     setProject({
       ...project,
       [event.target.name]: event.target.value,
     });
   };
 
-  const handleProjectSubmit = () => {
+  const handleProjectSubmit = async () => {
+    try {
+      
     console.log("submit", project);
-    projectsApi.createNewProject(project).catch((err) => {
-      console.warn("you have and err", err)
-    })
+    const {data} = await projectsApi.createNewProject(project);
+
+    const payload = {
+      id: data.id,
+      name: project.name, 
+      date_started: project.startDate, 
+      date_target: project.dueDate, 
+      date_completed: null, 
+      description: "default",
+      charity_charity_id: project.charity, 
+      team_team_id: project.team
+
+    }
+    console.log("New Project", payload)
+
+    projectDispatch({type:"ADD_PROJECT", payload})
+
     setOpen(false);
+    } catch (error) {
+      console.warn('error while creating new project', error)
+    }
   };
 
   const body = (
     <div style={modalStyle} className={classes.projectEditPaper}>
       <h2 id='create-project-modal-name'>Project {project.name}</h2>
       <p id='create-project-description'>
-        Add a new Project Task Title, Status, and Description
+        Add a new Project Title, Team, and Charity
       </p>
       <div className={classes.projectEditForm} noValidate autoComplete='off'>
         <div>
@@ -145,14 +154,34 @@ function AddProjectModal() {
             select
             fullWidth
             className={classes.textField}
+            id='create-project-team'
+            label='Team'
+            value={project.team}
+            name="team"
+            onChange={handleInputChange}
+            variant='outlined'
+          >
+            {options.teamOptions.map((option) => (
+              <MenuItem key={option.team_id} value={option.team_id}>
+                {option.name}
+              </MenuItem>
+            ))}
+          </TextField>
+        </div>
+
+        <div>
+          <TextField
+            select
+            fullWidth
+            className={classes.textField}
             id='create-project-charity'
             label='Charity'
             value={project.charity}
-            onChange={handleCharityChange}
-            helperText='Update Status'
+            name="charity"
+            onChange={handleInputChange}
             variant='outlined'
           >
-            {charityOptions.map((option) => (
+            {options.charityOptions.map((option) => (
               <MenuItem key={option.charity_id} value={option.charity_id}>
                 {option.name}
               </MenuItem>
@@ -165,7 +194,6 @@ function AddProjectModal() {
             id='date'
             label='Start Date'
             type='date'
-            defaultValue='2017-05-24'
             className={classes.dateField}
             InputLabelProps={{
               shrink: true,
@@ -177,7 +205,6 @@ function AddProjectModal() {
             id='date'
             label='Due Date'
             type='date'
-            defaultValue='2017-05-24'
             className={classes.dateField}
             InputLabelProps={{
               shrink: true,
