@@ -9,8 +9,8 @@ This application was designed as a project management tool for volunteer project
 * mySQL
 * axios
 ## Current Development
-Demo Time!
-Highlights: Analytics tracking with Chart.js
+
+
 ## Testing
 This application relies on the Jest React Testing Library. To test this: 
 1. Navigate to the client folder and run `npm run test` 
